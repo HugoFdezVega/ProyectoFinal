@@ -32,15 +32,17 @@ class MainActivity : AppCompatActivity() {
     private fun setListeners() {
         binding.btRegistro.setOnClickListener {
             if(!existeError()){
-                resultado=vm.registrarUsuario(email,pass)
-                if(resultado){
-                    vm.guardarUsuario(email, this)
-                    startActivity(Intent(this, DosActivity::class.java))
-                } else{
-                    Toast.makeText(this, "Error en el registro", Toast.LENGTH_LONG).show()
+                //resultado=vm.registrarUsuario(email,pass)
+                vm.registrarUsuario(email,pass){
+                    resultado=it
+                    if(resultado){
+                        vm.guardarUsuario(email, this)
+                        startActivity(Intent(this, DosActivity::class.java))
+                    } else{
+                        Toast.makeText(this, "Error en el registro", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
-
         }
     }
 
