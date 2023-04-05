@@ -3,12 +3,26 @@ package com.example.proyectofinal.viewmodel
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.db.Repositorio
 import com.example.proyectofinal.model.storage.Prefs
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel: ViewModel() {
-    var repo=Repositorio()
+@HiltViewModel
+class MainViewModel @Inject constructor(private val repo: Repositorio): ViewModel() {
     lateinit var prefs: Prefs
+
+    fun inicializar(){
+        viewModelScope.launch {
+            val lista=readAll()
+            if(!lista.isNullOrEmpty()){
+                //Asignar la lista al Provider
+            }
+        }
+    }
 
     fun guardarUsuario(usuario: String, c: Context){
         prefs=Prefs(c)
@@ -21,10 +35,16 @@ class MainViewModel: ViewModel() {
     }
 
     fun registrarUsuario(email: String, pass: String, callback:(Boolean)->Unit){
-        //return repo.registrarUsuario(email,pass)
         repo.registrarUsuario(email,pass) {
             callback(it)
         }
     }
+
+    suspend fun readAll(): List<Comida>?{
+        val lista=repo.readAll()
+        return lista
+    }
+
+
 
 }
