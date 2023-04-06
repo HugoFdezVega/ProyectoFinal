@@ -1,9 +1,13 @@
 package com.example.proyectofinal.model.db
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.proyectofinal.model.Comida
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.storage.FirebaseStorage
@@ -20,6 +24,12 @@ class Repositorio @Inject constructor() {
 
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
+            callback(it.isSuccessful)
+        }
+    }
+
+    fun entrar(email: String, pass: String, callback: (Boolean) -> Unit){
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email,pass).addOnCompleteListener {
             callback(it.isSuccessful)
         }
     }

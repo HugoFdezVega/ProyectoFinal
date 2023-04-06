@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".view.MenuBarFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color4">
+
+        <ImageButton
+            android:id="@+id/btHome"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:adjustViewBounds="true"
+            android:backgroundTint="@color/color4"
+            android:scaleType="fitCenter"
+            android:src="@drawable/home_in"
+            app:layout_constraintEnd_toStartOf="@+id/btListas"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btListas"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="50dp"
+            android:adjustViewBounds="true"
+            android:backgroundTint="@color/color4"
+            android:scaleType="fitCenter"
+            android:src="@drawable/lista"
+            app:layout_constraintBottom_toBottomOf="@+id/btHome"
+            app:layout_constraintEnd_toStartOf="@+id/btLogOut"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btHome"
+            app:layout_constraintTop_toTopOf="@+id/btHome" />
+
+        <ImageButton
+            android:id="@+id/btLogOut"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="50dp"
+            android:backgroundTint="@color/color4"
+            android:scaleType="fitCenter"
+            android:src="@drawable/log_out"
+            app:layout_constraintBottom_toBottomOf="@+id/btListas"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btListas"
+            app:layout_constraintTop_toTopOf="@+id/btListas" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

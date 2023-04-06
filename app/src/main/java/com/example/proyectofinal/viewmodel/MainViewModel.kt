@@ -1,6 +1,7 @@
 package com.example.proyectofinal.viewmodel
 
 import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,8 +35,19 @@ class MainViewModel @Inject constructor(private val repo: Repositorio): ViewMode
         return prefs.getUser()
     }
 
+    fun cerrarSesion(c: Context){
+        prefs=Prefs(c)
+        prefs.borrarTodo()
+    }
+
     fun registrarUsuario(email: String, pass: String, callback:(Boolean)->Unit){
         repo.registrarUsuario(email,pass) {
+            callback(it)
+        }
+    }
+
+    fun entrar(email: String, pass: String, callback: (Boolean) -> Unit){
+        repo.entrar(email,pass){
             callback(it)
         }
     }
@@ -44,7 +56,6 @@ class MainViewModel @Inject constructor(private val repo: Repositorio): ViewMode
         val lista=repo.readAll()
         return lista
     }
-
 
 
 }
