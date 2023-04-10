@@ -60,7 +60,7 @@ class ListasFragment : Fragment() {
             if(rbComidas.isChecked){
                 startActivity(Intent(btAdd.context,AddComidaActivity::class.java))
             } else {
-                startActivity(Intent(btAdd.context,AddIngredientesActivity::class.java))
+                startActivity(Intent(btAdd.context,AddIngredienteActivity::class.java))
             }
         }
 

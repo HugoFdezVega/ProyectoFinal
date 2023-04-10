@@ -29,7 +29,7 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
             cargarFragment(fragments[boton] as Fragment)
         } else {
             FirebaseAuth.getInstance().signOut()
-            vm.cerrarSesion(this)
+            vm.cerrarSesion()
             startActivity(Intent(this, MainActivity::class.java))
         }
     }

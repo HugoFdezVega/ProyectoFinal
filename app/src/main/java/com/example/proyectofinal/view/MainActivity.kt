@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
                     val credenciales= GoogleAuthProvider.getCredential(cuenta.idToken,null)
                     FirebaseAuth.getInstance().signInWithCredential(credenciales).addOnCompleteListener {
                         if(it.isSuccessful){
-                            vm.guardarUsuario(cuenta.email?:"",this) //Si es nulo, pasa ""
+                            vm.guardarUsuario(cuenta.email?:"") //Si es nulo, pasa ""
                             startActivity(Intent(this, DosActivity::class.java))
                         } else {
                             Toast.makeText(this, "Error en el login de google", Toast.LENGTH_LONG).show()
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun comprobarEmail() {
-        if (vm.obtenerUsuario(this) != null) {
+        if (vm.obtenerUsuario() != null) {
             startActivity(Intent(this, DosActivity::class.java))
         }
     }
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     private fun entrar() {
         vm.entrar(email,pass){
             if(it){
-                vm.guardarUsuario(email,this)
+                vm.guardarUsuario(email)
                 startActivity(Intent(this, DosActivity::class.java))
             } else {
                 Toast.makeText(this, "Error al entrar", Toast.LENGTH_LONG).show()
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     private fun registrarUsuario() {
         vm.registrarUsuario(email, pass) {
             if (it) {
-                vm.guardarUsuario(email, this)
+                vm.guardarUsuario(email)
                 startActivity(Intent(this, DosActivity::class.java))
             } else {
                 Toast.makeText(this, "Error en el registro", Toast.LENGTH_LONG).show()
@@ -111,15 +111,15 @@ class MainActivity : AppCompatActivity() {
         email = binding.etEmail.text.toString().trim()
         pass = binding.etPass.text.toString().trim()
         if (email.isBlank()) {
-            binding.etEmail.setError("El email no puede estar vacio")
+            binding.etEmail.setError("El email no puede estar vacío")
             binding.etEmail.requestFocus()
             return true
         } else if (pass.isBlank()) {
-            binding.etPass.setError("La contraseña no puede estar vacia")
+            binding.etPass.setError("La contraseña no puede estar vacía")
             binding.etPass.requestFocus()
             return true
-        } else if (pass.length < 8) {
-            binding.etPass.setError("La contraseña debe tener al menos 8 caracteres")
+        } else if (pass.length < 6) {
+            binding.etPass.setError("La contraseña debe tener al menos 6 caracteres")
             binding.etPass.requestFocus()
             return true
         }

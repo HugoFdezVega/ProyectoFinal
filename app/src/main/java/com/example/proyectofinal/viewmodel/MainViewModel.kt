@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repo: Repositorio): ViewModel() {
-    lateinit var prefs: Prefs
+class MainViewModel @Inject constructor(private val repo: Repositorio, private val prefs: Prefs): ViewModel() {
 
     fun inicializar(){
         viewModelScope.launch {
@@ -25,18 +24,15 @@ class MainViewModel @Inject constructor(private val repo: Repositorio): ViewMode
         }
     }
 
-    fun guardarUsuario(usuario: String, c: Context){
-        prefs=Prefs(c)
+    fun guardarUsuario(usuario: String){
         prefs.setUser(usuario)
     }
 
-    fun obtenerUsuario(c: Context): String?{
-        prefs=Prefs(c)
+    fun obtenerUsuario(): String?{
         return prefs.getUser()
     }
 
-    fun cerrarSesion(c: Context){
-        prefs=Prefs(c)
+    fun cerrarSesion(){
         prefs.borrarTodo()
     }
 

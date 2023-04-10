@@ -14,7 +14,14 @@
         android:theme="@style/Theme.ProyectoFinal"
         tools:targetApi="31">
         <activity
-            android:name=".view.AddIngredientesActivity"
+            android:name=".view.SeleccionarIngredienteActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".view.AddIngredienteActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
