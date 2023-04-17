@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">ProyectoFinal</string>
+    <string-array name="Unidades">
+        <item>Gramos</item>
+        <item>Litros</item>
+        <item>Cucharadas</item>
+        <item>Kg</item>
+        <item>Unidades</item>
+        <item>Vasos</item>
+        <item>Mililitros</item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -24,24 +24,24 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <CheckBox
-            android:id="@+id/cbVegano"
+            android:id="@+id/cbVeganoListas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Vegano"
-            app:layout_constraintBottom_toBottomOf="@+id/cbGlutenFree"
-            app:layout_constraintEnd_toStartOf="@+id/cbGlutenFree"
+            app:layout_constraintBottom_toBottomOf="@+id/cbGlutenFreeListas"
+            app:layout_constraintEnd_toStartOf="@+id/cbGlutenFreeListas"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/textView"
-            app:layout_constraintTop_toTopOf="@+id/cbGlutenFree" />
+            app:layout_constraintTop_toTopOf="@+id/cbGlutenFreeListas" />
 
         <CheckBox
-            android:id="@+id/cbGlutenFree"
+            android:id="@+id/cbGlutenFreeListas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Gluten Free"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/cbVegano"
+            app:layout_constraintStart_toEndOf="@+id/cbVeganoListas"
             app:layout_constraintTop_toBottomOf="@+id/sbListas" />
 
         <TextView
@@ -52,9 +52,9 @@
             android:text="Filtros:"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/cbVegano"
+            app:layout_constraintBottom_toBottomOf="@+id/cbVeganoListas"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/cbVegano" />
+            app:layout_constraintTop_toTopOf="@+id/cbVeganoListas" />
 
         <RadioGroup
             android:id="@+id/radioGroup"
@@ -66,7 +66,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cbVegano">
+            app:layout_constraintTop_toBottomOf="@+id/cbVeganoListas">
 
             <RadioButton
                 android:id="@+id/rbComidas"

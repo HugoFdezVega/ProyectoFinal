@@ -2,10 +2,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color1"
-    tools:context=".view.AddComidaActivity" >
+    tools:context=".view.AddComidaActivity">
 
   <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
@@ -16,7 +17,7 @@
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
         app:cardCornerRadius="8dp"
-        app:cardMaxElevation="8dp"
+        app:cardElevation="8dp"
         app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +45,7 @@
             android:layout_marginTop="25dp"
             android:ems="10"
             android:hint="Nombre"
-            android:inputType="textPersonName"
+            android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/ivComida"
@@ -53,7 +54,7 @@
         <EditText
             android:id="@+id/etTag1"
             android:layout_width="170dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:ems="10"
             android:hint="Tag 1"
@@ -66,7 +67,7 @@
         <EditText
             android:id="@+id/etTag2"
             android:layout_width="170dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Tag 2"
             android:inputType="textPersonName"
@@ -83,7 +84,7 @@
             android:layout_marginTop="20dp"
             android:ems="10"
             android:hint="Descripción"
-            android:inputType="textPersonName"
+            android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -170,6 +171,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
+            android:longClickable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView5" />

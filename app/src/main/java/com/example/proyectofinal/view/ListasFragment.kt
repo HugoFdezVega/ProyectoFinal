@@ -48,8 +48,8 @@ class ListasFragment : Fragment() {
     private fun inicializar(view: View) {
         btAdd=view.findViewById(R.id.btAddListas)
         sbBusqueda=view.findViewById(R.id.sbListas)
-        cbVegano=view.findViewById(R.id.cbVegano)
-        cbGlutenFree=view.findViewById(R.id.cbGlutenFree)
+        cbVegano=view.findViewById(R.id.cbVeganoListas)
+        cbGlutenFree=view.findViewById(R.id.cbGlutenFreeListas)
         rbComidas=view.findViewById(R.id.rbComidas)
         rbIngredientes=view.findViewById(R.id.rbIngredientes)
         rvListas=view.findViewById(R.id.rvListas)
