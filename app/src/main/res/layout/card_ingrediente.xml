@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivIngredienteAdd"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ingrediente" />
+
+        <TextView
+            android:id="@+id/tvNombreIngredienteAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Patatas fritas"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ivIngredienteAdd"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etCantidadIngredienteAdd"
+            android:layout_width="85dp"
+            android:layout_height="39dp"
+            android:ems="10"
+            android:hint="Cantidad"
+            android:inputType="numberSigned"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/cbVeganAdd"
+            tools:layout_editor_absoluteX="153dp" />
+
+        <TextView
+            android:id="@+id/tvUnidadIngredienteAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Cucharadas"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/etCantidadIngredienteAdd"
+            app:layout_constraintStart_toEndOf="@+id/etCantidadIngredienteAdd"
+            app:layout_constraintTop_toTopOf="@+id/etCantidadIngredienteAdd"
+            app:layout_constraintVertical_bias="0.411" />
+
+        <CheckBox
+            android:id="@+id/cbVeganAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:editable="false"
+            android:text="Vegano"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/cbGlutenFreeAdd"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ivIngredienteAdd"
+            app:layout_constraintTop_toBottomOf="@+id/tvNombreIngredienteAdd" />
+
+        <CheckBox
+            android:id="@+id/cbGlutenFreeAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:editable="false"
+            android:text="Gluten Free"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/cbVeganAdd"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/cbVeganAdd"
+            app:layout_constraintTop_toTopOf="@+id/cbVeganAdd" />
+
+        <Button
+            android:id="@+id/btSuprimirIngredienteAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/design_default_color_error"
+            android:paddingBottom="4dp"
+            android:text="Suprimir"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etCantidadIngredienteAdd" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

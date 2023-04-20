@@ -4,7 +4,9 @@ class Ingrediente(
     var nombre: String?=null,
     var cantidad: Double?=0.0,
     var unidad: String?=null,
-    var imagen: String?= null
+    var imagen: String?= null,
+    var vegano: Boolean?=null,
+    var glutenFree: Boolean?=null
 ):java.io.Serializable {
 
     //Métodos equals y hashcode sobreescritos para que detecten como iguales dos
@@ -21,7 +23,7 @@ class Ingrediente(
     }
 
     //Constructor copia para evitar problemas de aliasing
-    constructor(ingrediente: Ingrediente) : this(ingrediente.nombre, ingrediente.cantidad, ingrediente.unidad, ingrediente.imagen)
+    constructor(ingrediente: Ingrediente) : this(ingrediente.nombre, ingrediente.cantidad, ingrediente.unidad, ingrediente.imagen, ingrediente.vegano, ingrediente.glutenFree)
 
 
 }
