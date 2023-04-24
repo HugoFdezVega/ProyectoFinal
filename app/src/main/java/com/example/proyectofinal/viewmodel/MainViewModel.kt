@@ -2,10 +2,12 @@ package com.example.proyectofinal.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinal.model.Comida
+import com.example.proyectofinal.model.Ingrediente
 import com.example.proyectofinal.model.db.Repositorio
 import com.example.proyectofinal.model.storage.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,6 +53,18 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
     suspend fun readAll(): List<Comida>?{
         val lista=repo.readAll()
         return lista
+    }
+
+    fun usuarioFormateado(): String{
+        return prefs.getUser()!!.replace(".","-")
+    }
+
+    fun getListaIngredientes(): MutableList<Ingrediente>{
+        return repo.getListaIngredientes()
+    }
+
+    fun crearIngrediente(nuevoIngr: Ingrediente?, img: Uri?) {
+        TODO("Not yet implemented")
     }
 
 

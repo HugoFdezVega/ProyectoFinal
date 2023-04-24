@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.proyectofinal.model.Comida
+import com.example.proyectofinal.model.Ingrediente
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
@@ -21,6 +22,7 @@ import javax.inject.Singleton
 class Repositorio @Inject constructor() {
     private val db= FirebaseDatabase.getInstance("https://randomeater-e0c93-default-rtdb.europe-west1.firebasedatabase.app/")
     private val storage= FirebaseStorage.getInstance("gs://randomeater-e0c93.appspot.com")
+    private var listaIngredientes= mutableListOf<Ingrediente>()
 
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
@@ -42,6 +44,10 @@ class Repositorio @Inject constructor() {
 
             lista?: emptyList<Comida>()
         }
+    }
+
+    fun getListaIngredientes(): MutableList<Ingrediente>{
+        return listaIngredientes
     }
 
 }

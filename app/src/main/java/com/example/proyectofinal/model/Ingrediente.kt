@@ -2,11 +2,11 @@ package com.example.proyectofinal.model
 
 class Ingrediente(
     var nombre: String?=null,
-    var cantidad: Double?=0.0,
-    var unidad: String?=null,
+    var medida: String?=null,
     var imagen: String?= null,
     var vegano: Boolean?=null,
-    var glutenFree: Boolean?=null
+    var glutenFree: Boolean?=null,
+    var cantidad: Double?=0.0,
 ):java.io.Serializable {
 
     //Métodos equals y hashcode sobreescritos para que detecten como iguales dos
@@ -23,7 +23,7 @@ class Ingrediente(
     }
 
     //Constructor copia para evitar problemas de aliasing
-    constructor(ingrediente: Ingrediente) : this(ingrediente.nombre, ingrediente.cantidad, ingrediente.unidad, ingrediente.imagen, ingrediente.vegano, ingrediente.glutenFree)
+    constructor(ingrediente: Ingrediente) : this(ingrediente.nombre, ingrediente.medida, ingrediente.imagen, ingrediente.vegano, ingrediente.glutenFree, ingrediente.cantidad)
 
 
 }
