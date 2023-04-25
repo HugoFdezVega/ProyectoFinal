@@ -15,11 +15,11 @@ class Ingrediente(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as Ingrediente
-        if (nombre != other.nombre) return false
+        if (nombre!!.lowercase() != other.nombre!!.lowercase()) return false
         return true
     }
     override fun hashCode(): Int {
-        return nombre.hashCode()
+        return nombre!!.lowercase().hashCode()
     }
 
     //Constructor copia para evitar problemas de aliasing

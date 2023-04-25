@@ -60,17 +60,22 @@ class AddIngredienteActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 medida= parent!!.getItemAtPosition(position).toString()
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
-
         }
+
     }
 
     private fun guardarIngrediente() {
         if(!existeError()){
-            vm.crearIngrediente(nuevoIngr, img)
+            if(datos==null){
+                nuevoIngr=Ingrediente(nombre,medida,"null",binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
+            } else {
+                nuevoIngr=Ingrediente(nombre,medida,ingrediente.imagen,binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
+            }
+            vm.crearIngrediente(nuevoIngr!!, img)
         }
+        finish()
     }
 
     private fun existeError(): Boolean {
@@ -80,8 +85,8 @@ class AddIngredienteActivity : AppCompatActivity() {
             binding.etNombreIngrediente.requestFocus()
             return true
         } else {
-            nuevoIngr=Ingrediente(nombre,medida,null,binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
-            if(vm.getListaIngredientes().contains(nuevoIngr)){
+            var ingrRepetido=Ingrediente(nombre)
+            if(vm.getListaIngredientes().contains(ingrRepetido)){
                 Toast.makeText(this,"Ya existe un ingrediente con este nombre",Toast.LENGTH_LONG).show()
                 binding.etNombreIngrediente.requestFocus()
                 return true
@@ -126,6 +131,7 @@ class AddIngredienteActivity : AppCompatActivity() {
             var listaMedida=resources.getStringArray(R.array.Unidades)
             var index=listaMedida.indexOf(ingrediente.medida)
             binding.spMedidaIngrediente.setSelection(index)
+            Picasso.get().load(ingrediente.imagen as Uri).into(binding.ivIngrediente)
         }
     }
 

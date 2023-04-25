@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinal.model.Comida
@@ -13,6 +14,8 @@ import com.example.proyectofinal.model.storage.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repo: Repositorio, private val prefs: Prefs): ViewModel() {
@@ -63,9 +66,18 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         return repo.getListaIngredientes()
     }
 
-    fun crearIngrediente(nuevoIngr: Ingrediente?, img: Uri?) {
-        TODO("Not yet implemented")
+    fun crearIngrediente(nuevoIngr: Ingrediente, img: Uri?) {
+        repo.crearIngrediente(nuevoIngr,img)
     }
+
+    fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
+        var lista=MutableLiveData<MutableList<Ingrediente>>()
+        repo.readIngredientes().observeForever {
+            lista.value=it
+        }
+        return lista
+    }
+
 
 
 }

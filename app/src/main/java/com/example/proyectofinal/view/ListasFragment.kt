@@ -9,14 +9,24 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.SearchView
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.R
 import com.example.proyectofinal.model.Comida
+import com.example.proyectofinal.model.Ingrediente
+import com.example.proyectofinal.model.adapters.ListaIngredientesAdapter
+import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ListasFragment : Fragment() {
+    private val vm: MainViewModel by viewModels()
+    private var listaIngredientes= mutableListOf<Ingrediente>()
+
     lateinit var btAdd: FloatingActionButton
     lateinit var sbBusqueda: SearchView
     lateinit var cbVegano: CheckBox
@@ -24,6 +34,7 @@ class ListasFragment : Fragment() {
     lateinit var rbComidas: RadioButton
     lateinit var rbIngredientes: RadioButton
     lateinit var rvListas: RecyclerView
+    lateinit var adapterIngredientes: ListaIngredientesAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +54,28 @@ class ListasFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         inicializar(view)
         setListeners()
+        setRecyclers(view)
+        observarIngredientes()
+    }
+
+    private fun setRecyclers(view: View) {
+        rvListas.layoutManager=LinearLayoutManager(view.context)
+        adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onItemDelete(it)},{onItemUpdate(it)})
+
+    }
+
+    private fun onItemUpdate(it: Ingrediente) {
+    }
+
+    private fun onItemDelete(it: Int) {
+    }
+
+    private fun observarIngredientes() {
+        vm.readIngredientes().observe(viewLifecycleOwner, Observer{
+                rvListas.adapter=adapterIngredientes
+                adapterIngredientes.lista=it
+                adapterIngredientes.notifyDataSetChanged()
+        })
     }
 
     private fun inicializar(view: View) {

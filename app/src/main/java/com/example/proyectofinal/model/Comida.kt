@@ -13,10 +13,10 @@ data class Comida(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as Comida
-        if (nombre != other.nombre) return false
+        if (nombre!!.lowercase() != other.nombre!!.lowercase()) return false
         return true
     }
     override fun hashCode(): Int {
-        return nombre.hashCode()
+        return nombre!!.lowercase().hashCode()
     }
 }

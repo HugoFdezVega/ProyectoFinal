@@ -1,5 +1,6 @@
 package com.example.proyectofinal.model.adapters
 
+import android.net.Uri
 import android.view.View
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
@@ -11,10 +12,10 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
     private val binding=CardIngredienteBinding.bind(v)
 
     fun render(ingrediente: Ingrediente,
-               actividad: String? = null,
+               actividad: String,
                onItemDelete: (Int) -> Unit,
                onItemUpdate: (Ingrediente) -> Unit){
-        if(actividad!=null){
+        if(actividad=="add"){
             binding.etCantidadIngredienteAdd.isGone=false
             binding.tvUnidadIngredienteAdd.isGone=false
             binding.btSuprimirIngredienteAdd.isGone=false
@@ -23,7 +24,9 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
                 onItemDelete(adapterPosition)
             }
         }
-        Picasso.get().load(ingrediente.imagen).into(binding.ivIngredienteAdd)
+        if(ingrediente.imagen!="null"){
+            Picasso.get().load(ingrediente.imagen).into(binding.ivIngredienteAdd)
+        }
         binding.tvNombreIngredienteAdd.text=ingrediente.nombre
         binding.cbVeganAdd.isChecked= ingrediente.vegano!!
         binding.cbGlutenFreeAdd.isChecked=ingrediente.glutenFree!!
