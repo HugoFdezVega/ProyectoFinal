@@ -1,4 +1,4 @@
-package com.example.proyectofinal.model.adapters
+package com.example.proyectofinal.model.adapters.listaIngredientes
 
 import android.net.Uri
 import android.view.View

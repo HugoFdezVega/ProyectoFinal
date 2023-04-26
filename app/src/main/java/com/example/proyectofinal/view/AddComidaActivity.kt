@@ -5,12 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.proyectofinal.databinding.ActivityAddComidaBinding
-import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
-import com.example.proyectofinal.model.adapters.ListaIngredientesAdapter
-import com.example.proyectofinal.model.adapters.ListaPasosAdapter
+import com.example.proyectofinal.model.adapters.listaIngredientes.ListaIngredientesAdapter
+import com.example.proyectofinal.model.adapters.listaPasos.ListaPasosAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +23,10 @@ class AddComidaActivity : AppCompatActivity() {
             } else {
                 listaIngredientes.add(ingredienteSeleccionado)
                 ingredientesAdapter.notifyItemInserted(listaIngredientes.size-1)
+                binding.rvIngredientesComida.scrollToPosition(listaIngredientes.size-1) //Bajamos el recycler
+                binding.scrollView.smoothScrollTo(0, binding.btAddIngredientesComida.top) //Scrolleamos hacia el botón
+                binding.tvSinIngredientes.isVisible=false
+
             }
         }
     }
@@ -38,8 +42,8 @@ class AddComidaActivity : AppCompatActivity() {
 
     private var listaPasos= mutableListOf("")
     private var listaIngredientes= mutableListOf<Ingrediente>()
-    lateinit var pasosAdapter:ListaPasosAdapter
-    lateinit var ingredientesAdapter:ListaIngredientesAdapter
+    lateinit var pasosAdapter: ListaPasosAdapter
+    lateinit var ingredientesAdapter: ListaIngredientesAdapter
     lateinit var binding: ActivityAddComidaBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +61,7 @@ class AddComidaActivity : AppCompatActivity() {
     private fun setRecyclers() {
         //Recycler de los pasos
         binding.rvPasos.layoutManager=LinearLayoutManager(this)
-        pasosAdapter=ListaPasosAdapter(listaPasos)
+        pasosAdapter= ListaPasosAdapter(listaPasos)
         binding.rvPasos.adapter=pasosAdapter
         //Recycler de los ingredientes
         binding.rvIngredientesComida.layoutManager=LinearLayoutManager(this)

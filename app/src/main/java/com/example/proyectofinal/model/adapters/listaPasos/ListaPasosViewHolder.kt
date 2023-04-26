@@ -1,4 +1,4 @@
-package com.example.proyectofinal.model.adapters
+package com.example.proyectofinal.model.adapters.listaPasos
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

@@ -1,10 +1,9 @@
-package com.example.proyectofinal.model.adapters
+package com.example.proyectofinal.model.adapters.listaPasos
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.R
-import com.example.proyectofinal.model.Ingrediente
 
 class ListaPasosAdapter(var lista: MutableList<String>): RecyclerView.Adapter<ListaPasosViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaPasosViewHolder {

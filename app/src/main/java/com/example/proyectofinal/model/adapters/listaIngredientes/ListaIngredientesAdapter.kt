@@ -1,4 +1,4 @@
-package com.example.proyectofinal.model.adapters
+package com.example.proyectofinal.model.adapters.listaIngredientes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
