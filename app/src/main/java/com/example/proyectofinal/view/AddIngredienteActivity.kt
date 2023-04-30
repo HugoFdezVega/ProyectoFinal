@@ -103,7 +103,7 @@ class AddIngredienteActivity : AppCompatActivity() {
 
     private fun comprobarAdmin() {
         var admins=resources.getStringArray(R.array.admins)
-        if(admins.contains(vm.usuarioFormateado())){
+        if(admins.contains(vm.obtenerUsuario())){
             modoAdmin()
         }
     }
@@ -131,7 +131,7 @@ class AddIngredienteActivity : AppCompatActivity() {
             var listaMedida=resources.getStringArray(R.array.Unidades)
             var index=listaMedida.indexOf(ingrediente.medida)
             binding.spMedidaIngrediente.setSelection(index)
-            Picasso.get().load(ingrediente.imagen as Uri).into(binding.ivIngrediente)
+            Picasso.get().load(ingrediente.imagen).into(binding.ivIngrediente)
         }
     }
 

@@ -3,10 +3,11 @@ package com.example.proyectofinal.model
 data class Comida(
     var nombre: String?=null,
     var descripcion: String?=null,
-    var tags: MutableList<String>,
+    var tags: MutableList<String>?=null,
     var imagen: String?=null,
-    var ingredientes: MutableList<Ingrediente>,
-    var preparacion: MutableList<String>
+    var ingredientes: MutableList<Ingrediente>?=null,
+    var preparacion: MutableList<String>?=null,
+    var raciones: Int=1
     ):java.io.Serializable{
 
     override fun equals(other: Any?): Boolean {

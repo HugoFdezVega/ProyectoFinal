@@ -1,20 +1,15 @@
 package com.example.proyectofinal.model.db
 
-import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,6 +19,7 @@ class Repositorio @Inject constructor() {
     private val storage= FirebaseStorage.getInstance("gs://randomeater-e0c93.appspot.com")
     private var listaIngredientes= mutableListOf<Ingrediente>()
     private var ldIngredientes=MutableLiveData<ArrayList<Ingrediente>>()
+    private var listaComidas= mutableListOf<Comida>()
 
 
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
@@ -52,15 +48,19 @@ class Repositorio @Inject constructor() {
         return listaIngredientes
     }
 
+    fun getListaComidas(): MutableList<Comida>{
+        return listaComidas
+    }
+
     fun crearIngrediente(nuevoIngr: Ingrediente, img: Uri?) {
         if(img!=null){
-            guardarImagen(nuevoIngr, img)
+            guardarImagenIngr(nuevoIngr, img)
         } else {
             guardarIngrediente(nuevoIngr)
         }
     }
 
-    private fun guardarImagen(nuevoIngr: Ingrediente, img: Uri?) {
+    private fun guardarImagenIngr(nuevoIngr: Ingrediente, img: Uri?) {
         val imagen=storage.reference.child("ingredientes/${nuevoIngr.nombre}.png")
         val upload=imagen.putFile(img!!).addOnSuccessListener {
             //Se ha guardado la imagen
@@ -85,6 +85,43 @@ class Repositorio @Inject constructor() {
             listaIngredientes.sortBy {it.nombre}
         }
             .addOnFailureListener {
+                println(it.message.toString())
+            }
+    }
+
+    fun crearComida(nuevaComida: Comida, img: Uri?){
+        if(img!=null){
+            guardarImagenComida(nuevaComida, img)
+        } else {
+            guardarComida(nuevaComida)
+        }
+    }
+
+    private fun guardarComida(nuevaComida: Comida) {
+        db.getReference("comidas").child(nuevaComida.nombre!!).setValue(nuevaComida).addOnSuccessListener {
+            //Se ha guardado la comida, así que la añadimos a la lista y la ordenamos
+            listaComidas.add(nuevaComida)
+            listaComidas.sortBy {it.nombre}
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
+            }
+    }
+
+    private fun guardarImagenComida(nuevaComida: Comida, img: Uri) {
+        val imagen=storage.reference.child("comidas/${nuevaComida.nombre}.png")
+        val upload=imagen.putFile(img!!).addOnSuccessListener {
+            //Se ha guardado la imagen
+            imagen.downloadUrl.addOnSuccessListener {
+                //Descargamos la imagen recién guardada y la pasamos como String al ingrediente
+                nuevaComida.imagen=it.toString()
+                guardarComida(nuevaComida)
+            }
+                .addOnFailureListener {
+                    println(it.message.toString())
+                }
+        }
+            .addOnFailureListener{
                 println(it.message.toString())
             }
     }

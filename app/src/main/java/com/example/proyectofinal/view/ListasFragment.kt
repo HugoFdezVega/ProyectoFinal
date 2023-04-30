@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ListasFragment : Fragment() {
     private val vm: MainViewModel by viewModels()
     private var listaIngredientes= mutableListOf<Ingrediente>()
+    private var admin=false
 
     lateinit var btAdd: FloatingActionButton
     lateinit var sbBusqueda: SearchView
@@ -59,7 +60,7 @@ class ListasFragment : Fragment() {
 
     private fun setRecyclers(view: View) {
         rvListas.layoutManager=LinearLayoutManager(view.context)
-        adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onItemDelete(it)},{onItemUpdate(it)})
+        adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onItemDelete(it)},{onItemUpdate(it)},admin)
 
     }
 

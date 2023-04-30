@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
                 android:ems="10"
+                android:enabled="false"
                 android:gravity="start|top"
                 android:hint="Nombre"
                 android:inputType="textMultiLine"

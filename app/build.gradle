@@ -75,6 +75,7 @@ dependencies {
 
     //DaggerHilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'androidx.core:core:1.10.0'
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     testImplementation 'junit:junit:4.13.2'

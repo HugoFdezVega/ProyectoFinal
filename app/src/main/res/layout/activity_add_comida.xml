@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/color1"
+    android:nestedScrollingEnabled="true"
     tools:context=".view.AddComidaActivity">
 
   <androidx.constraintlayout.widget.ConstraintLayout

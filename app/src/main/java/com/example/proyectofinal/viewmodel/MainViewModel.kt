@@ -66,8 +66,16 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         return repo.getListaIngredientes()
     }
 
+    fun getListaComidas(): MutableList<Comida>{
+        return repo.getListaComidas()
+    }
+
     fun crearIngrediente(nuevoIngr: Ingrediente, img: Uri?) {
         repo.crearIngrediente(nuevoIngr,img)
+    }
+
+    fun crearComida(nuevaComida: Comida, img: Uri?){
+        repo.crearComida(nuevaComida,img)
     }
 
     fun readIngredientes(): LiveData<MutableList<Ingrediente>>{

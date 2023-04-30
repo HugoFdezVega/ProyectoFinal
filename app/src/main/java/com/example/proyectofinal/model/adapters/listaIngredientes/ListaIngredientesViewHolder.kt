@@ -1,6 +1,5 @@
 package com.example.proyectofinal.model.adapters.listaIngredientes
 
-import android.net.Uri
 import android.view.View
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
@@ -11,11 +10,14 @@ import com.squareup.picasso.Picasso
 class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
     private val binding=CardIngredienteBinding.bind(v)
 
-    fun render(ingrediente: Ingrediente,
-               actividad: String,
-               onItemDelete: (Int) -> Unit,
-               onItemUpdate: (Ingrediente) -> Unit){
-        if(actividad=="add"){
+    fun render(
+        ingrediente: Ingrediente,
+        actividad: String,
+        onItemDelete: (Int) -> Unit,
+        onItemUpdate: (Ingrediente) -> Unit,
+        admin: Boolean
+    ){
+        if(actividad=="add" && admin){
             binding.etCantidadIngredienteAdd.isGone=false
             binding.tvUnidadIngredienteAdd.isGone=false
             binding.btSuprimirIngredienteAdd.isGone=false

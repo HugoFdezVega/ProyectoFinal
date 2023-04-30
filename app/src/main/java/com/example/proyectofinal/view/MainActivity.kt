@@ -126,5 +126,10 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    //Sobreescribir el método para que no haga nada al pulsar el botón de retroceso
+    override fun onBackPressed() {
+
+    }
+
 
 }

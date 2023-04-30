@@ -44,7 +44,7 @@
             android:ems="10"
             android:hint="Cantidad"
             android:inputType="numberSigned"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintStart_toEndOf="@+id/ivIngredienteAdd"
             app:layout_constraintTop_toBottomOf="@+id/cbVeganAdd" />
 
@@ -55,7 +55,7 @@
             android:layout_marginStart="5dp"
             android:text="Cucharadas"
             android:textSize="16sp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/etCantidadIngredienteAdd"
             app:layout_constraintStart_toEndOf="@+id/etCantidadIngredienteAdd"
             app:layout_constraintTop_toTopOf="@+id/etCantidadIngredienteAdd"
@@ -95,7 +95,7 @@
             android:backgroundTint="@color/design_default_color_error"
             android:paddingBottom="4dp"
             android:text="Suprimir"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
