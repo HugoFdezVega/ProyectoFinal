@@ -18,9 +18,15 @@ class Repositorio @Inject constructor() {
     private val db= FirebaseDatabase.getInstance("https://randomeater-e0c93-default-rtdb.europe-west1.firebasedatabase.app/")
     private val storage= FirebaseStorage.getInstance("gs://randomeater-e0c93.appspot.com")
     private var listaIngredientes= mutableListOf<Ingrediente>()
-    private var ldIngredientes=MutableLiveData<ArrayList<Ingrediente>>()
+    private var ingrVeganos= mutableListOf<Ingrediente>()
+    private var ingrGlutenFree= mutableListOf<Ingrediente>()
+    private var ingrVeganosGlutenFree= mutableListOf<Ingrediente>()
     private var listaComidas= mutableListOf<Comida>()
-
+    private var comidasVeganas= mutableListOf<Comida>()
+    private var comidasGlutenFree= mutableListOf<Comida>()
+    private var comidasVeganasGlutenFree= mutableListOf<Comida>()
+    private var menuSemanal= mutableListOf<Comida>()
+    private var listaCompra= mutableListOf<String>()
 
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
@@ -100,7 +106,7 @@ class Repositorio @Inject constructor() {
     private fun guardarComida(nuevaComida: Comida) {
         db.getReference("comidas").child(nuevaComida.nombre!!).setValue(nuevaComida).addOnSuccessListener {
             //Se ha guardado la comida, así que la añadimos a la lista y la ordenamos
-            listaComidas.add(nuevaComida)
+            //listaComidas.add(nuevaComida)
             listaComidas.sortBy {it.nombre}
         }
             .addOnFailureListener {
@@ -126,7 +132,7 @@ class Repositorio @Inject constructor() {
             }
     }
 
-    fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
+    fun readIngrSelect(): LiveData<MutableList<Ingrediente>>{
         val mutableLista=MutableLiveData<MutableList<Ingrediente>>()
         val lista= mutableListOf<Ingrediente>()
         db.getReference("ingredientes").addValueEventListener(object : ValueEventListener{
@@ -148,5 +154,44 @@ class Repositorio @Inject constructor() {
         })
         return mutableLista
     }
+
+    suspend fun readComidas(callback: (Boolean) -> Unit) {
+        return withContext(Dispatchers.IO) {
+
+            db.getReference("comidas").addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    listaComidas.clear()
+                    for (comidaSnapshot in snapshot.children) {
+                        val nombre = comidaSnapshot.child("nombre").getValue(String::class.java)
+                        val descripcion =
+                            comidaSnapshot.child("descripcion").getValue(String::class.java)
+                        val tags = mutableListOf<String>()
+                        for (tagsSnapshot in comidaSnapshot.child("tags").children) {
+                            tags.add(tagsSnapshot.getValue(String::class.java)!!)
+                        }
+                        val imagen = comidaSnapshot.child("imagen").getValue(String::class.java)
+                        val ingredientes = mutableListOf<Ingrediente>()
+                        for (ingredienteSnapshot in comidaSnapshot.child("ingredientes").children) {
+                            val ingrediente = ingredienteSnapshot.getValue(Ingrediente::class.java)
+                            ingredientes.add(ingrediente!!)
+                        }
+                        val preparacion = mutableListOf<String>()
+                        for (preparacionSnapshot in comidaSnapshot.child("preparacion").children) {
+                            preparacion.add(preparacionSnapshot.getValue(String::class.java)!!)
+                        }
+                        val raciones = comidaSnapshot.child("raciones").getValue(Int::class.java)!!
+                        listaComidas.add(Comida(nombre, descripcion, tags, imagen, ingredientes, preparacion, raciones))
+                    }
+                    callback(true)
+                }
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+        }
+    }
+
+
+
 
 }

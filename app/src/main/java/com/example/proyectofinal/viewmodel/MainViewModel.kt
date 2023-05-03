@@ -1,7 +1,5 @@
 package com.example.proyectofinal.viewmodel
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,17 +12,18 @@ import com.example.proyectofinal.model.storage.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repo: Repositorio, private val prefs: Prefs): ViewModel() {
 
+    val isLoading=MutableLiveData<Boolean>()
+
     fun inicializar(){
         viewModelScope.launch {
-            val lista=readAll()
-            if(!lista.isNullOrEmpty()){
-                //Asignar la lista al Provider
+            isLoading.postValue(true)
+            repo.readComidas{
+                isLoading.postValue(false)
             }
         }
     }
@@ -78,13 +77,15 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         repo.crearComida(nuevaComida,img)
     }
 
-    fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
+    fun readIngrSelect(): LiveData<MutableList<Ingrediente>>{
         var lista=MutableLiveData<MutableList<Ingrediente>>()
-        repo.readIngredientes().observeForever {
+        repo.readIngrSelect().observeForever {
             lista.value=it
         }
         return lista
     }
+
+
 
 
 

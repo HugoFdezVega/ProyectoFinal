@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.proyectofinal.databinding.ActivitySeleccionarIngredienteBinding
@@ -43,7 +42,7 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
     }
 
     private fun observarIngredientes() {
-        vm.readIngredientes().observe(this, Observer{
+        vm.readIngrSelect().observe(this, Observer{
             binding.pbSeleccionarIngr.isVisible=true
             adapter.lista=it
             adapter.notifyDataSetChanged()
@@ -59,4 +58,5 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         setResult(RESULT_OK,i)
         finish()
     }
+
 }

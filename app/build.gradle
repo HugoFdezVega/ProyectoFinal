@@ -72,6 +72,7 @@ dependencies {
 
     //Corrutinas
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
 
     //DaggerHilt
     implementation "com.google.dagger:hilt-android:$hilt_version"

@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.R
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
+import com.example.proyectofinal.model.adapters.listaComidas.ListaComidasAdapter
 import com.example.proyectofinal.model.adapters.listaIngredientes.ListaIngredientesAdapter
 import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,7 +27,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ListasFragment : Fragment() {
     private val vm: MainViewModel by viewModels()
-    private var listaIngredientes= mutableListOf<Ingrediente>()
+    private val listaIngredientes= mutableListOf<Ingrediente>()
+    private val listaComidas= mutableListOf<Comida>()
     private var admin=false
 
     lateinit var btAdd: FloatingActionButton
@@ -35,13 +39,17 @@ class ListasFragment : Fragment() {
     lateinit var rbIngredientes: RadioButton
     lateinit var rvListas: RecyclerView
     lateinit var adapterIngredientes: ListaIngredientesAdapter
+    lateinit var adapterComidas: ListaComidasAdapter
+    lateinit var pbListas: ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
+        vm.inicializar()
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,25 +60,49 @@ class ListasFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observarComidas()
         inicializar(view)
         setListeners()
         setRecyclers(view)
-        observarIngredientes()
+        //observarIngredientes()
+
+    }
+
+    private fun observarComidas() {
+        vm.isLoading.observe(viewLifecycleOwner, Observer {
+            pbListas.isVisible=it
+            if(!pbListas.isVisible){
+                rvListas.adapter=adapterComidas
+                adapterComidas.lista=vm.getListaComidas()
+                adapterComidas.notifyDataSetChanged()
+            }
+        })
     }
 
     private fun setRecyclers(view: View) {
         rvListas.layoutManager=LinearLayoutManager(view.context)
-        adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onItemDelete(it)},{onItemUpdate(it)},admin)
+        adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onIngrDelete(it)},{onIngrUpdate(it)},admin)
+        adapterComidas= ListaComidasAdapter(listaComidas,"null",{onComidaDelete(it)},{onComidaUpdate(it)})
 
     }
 
-    private fun onItemUpdate(it: Ingrediente) {
+    private fun onComidaUpdate(it: Ingrediente) {
+        TODO("Not yet implemented")
     }
 
-    private fun onItemDelete(it: Int) {
+    private fun onComidaDelete(it: Int) {
+        TODO("Not yet implemented")
     }
 
+    private fun onIngrUpdate(it: Ingrediente) {
+        TODO("Not yet implemented")
+    }
 
+    private fun onIngrDelete(it: Int) {
+        TODO("Not yet implemented")
+    }
+
+/*
     private fun observarIngredientes() {
         vm.readIngredientes().observe(viewLifecycleOwner, Observer{
                 rvListas.adapter=adapterIngredientes
@@ -78,6 +110,9 @@ class ListasFragment : Fragment() {
                 adapterIngredientes.notifyDataSetChanged()
         })
     }
+ */
+
+
 
     private fun inicializar(view: View) {
         btAdd=view.findViewById(R.id.btAddListas)
@@ -87,6 +122,7 @@ class ListasFragment : Fragment() {
         rbComidas=view.findViewById(R.id.rbComidas)
         rbIngredientes=view.findViewById(R.id.rbIngredientes)
         rvListas=view.findViewById(R.id.rvListas)
+        pbListas=view.findViewById(R.id.pbListas)
     }
 
     private fun setListeners() {
