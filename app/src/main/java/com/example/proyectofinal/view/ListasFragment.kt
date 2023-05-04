@@ -75,8 +75,39 @@ class ListasFragment : Fragment() {
                 rvListas.adapter=adapterComidas
                 adapterComidas.lista=vm.getListaComidas()
                 adapterComidas.notifyDataSetChanged()
+                comprobarFiltros()
             }
         })
+    }
+
+    private fun comprobarFiltros() {
+        if(rbComidas.isChecked){
+            rvListas.adapter=adapterComidas
+            if(cbVegano.isChecked&&cbGlutenFree.isChecked){
+                adapterComidas.lista=vm.getComidasVeganasGlutenFree()
+            }
+            else if(cbVegano.isChecked){
+                adapterComidas.lista=vm.getComidasVeganas()
+            }
+            else if(cbGlutenFree.isChecked){
+                adapterComidas.lista=vm.getComidasGlutenFree()
+            } else {
+                adapterComidas.lista=vm.getListaComidas()
+            }
+        } else {
+            rvListas.adapter=adapterIngredientes
+            if(cbVegano.isChecked&&cbGlutenFree.isChecked){
+                adapterIngredientes.lista=vm.getIngrVeganosGlutenFree()
+            }
+            else if(cbVegano.isChecked){
+                adapterIngredientes.lista=vm.getIngrVeganos()
+            }
+            else if(cbGlutenFree.isChecked){
+                adapterIngredientes.lista=vm.getIngrGlutenFree()
+            } else {
+                adapterIngredientes.lista=vm.getListaIngredientes()
+            }
+        }
     }
 
     private fun setRecyclers(view: View) {
@@ -133,8 +164,6 @@ class ListasFragment : Fragment() {
                 startActivity(Intent(btAdd.context,AddIngredienteActivity::class.java))
             }
         }
-
-
         sbBusqueda.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -144,6 +173,10 @@ class ListasFragment : Fragment() {
                 return true
             }
         })
+        cbVegano.setOnClickListener { comprobarFiltros() }
+        cbGlutenFree.setOnClickListener { comprobarFiltros() }
+        rbComidas.setOnClickListener { comprobarFiltros() }
+        rbIngredientes.setOnClickListener { comprobarFiltros() }
     }
 
     private fun listaFiltrada(busqueda: String?) {

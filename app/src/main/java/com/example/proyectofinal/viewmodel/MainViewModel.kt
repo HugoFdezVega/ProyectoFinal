@@ -52,11 +52,6 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         }
     }
 
-    suspend fun readAll(): List<Comida>?{
-        val lista=repo.readAll()
-        return lista
-    }
-
     fun usuarioFormateado(): String{
         return prefs.getUser()!!.replace(".","-")
     }
@@ -69,6 +64,30 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         return repo.getListaComidas()
     }
 
+    fun getComidasVeganas(): MutableList<Comida>{
+        return repo.getComidasVeganas()
+    }
+
+    fun getComidasGlutenFree(): MutableList<Comida>{
+        return repo.getComidasGlutenFree()
+    }
+
+    fun getComidasVeganasGlutenFree(): MutableList<Comida>{
+        return repo.getComidasVeganasGlutenFree()
+    }
+
+    fun getIngrVeganos(): MutableList<Ingrediente>{
+        return repo.getIngrVeganos()
+    }
+
+    fun getIngrGlutenFree(): MutableList<Ingrediente>{
+        return repo.getIngrGlutenFree()
+    }
+
+    fun getIngrVeganosGlutenFree(): MutableList<Ingrediente>{
+        return repo.getIngrVeganosGlutenFree()
+    }
+
     fun crearIngrediente(nuevoIngr: Ingrediente, img: Uri?) {
         repo.crearIngrediente(nuevoIngr,img)
     }
@@ -77,9 +96,9 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         repo.crearComida(nuevaComida,img)
     }
 
-    fun readIngrSelect(): LiveData<MutableList<Ingrediente>>{
+    fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
         var lista=MutableLiveData<MutableList<Ingrediente>>()
-        repo.readIngrSelect().observeForever {
+        repo.readIngredientes().observeForever {
             lista.value=it
         }
         return lista

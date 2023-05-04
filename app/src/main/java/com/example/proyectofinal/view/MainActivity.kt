@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import com.example.proyectofinal.databinding.ActivityMainBinding
 import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        observarIngredientes()
         setListeners()
         comprobarEmail()
     }
@@ -73,6 +74,13 @@ class MainActivity : AppCompatActivity() {
         binding.btGoogle.setOnClickListener {
                 entrarGoogle()
         }
+
+    }
+
+    private fun observarIngredientes() {
+        vm.readIngredientes().observe(this, Observer {
+
+        })
     }
 
     private fun entrarGoogle() {

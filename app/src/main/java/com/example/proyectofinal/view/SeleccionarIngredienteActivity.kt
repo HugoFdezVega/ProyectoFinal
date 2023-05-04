@@ -42,7 +42,7 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
     }
 
     private fun observarIngredientes() {
-        vm.readIngrSelect().observe(this, Observer{
+        vm.readIngredientes().observe(this, Observer{
             binding.pbSeleccionarIngr.isVisible=true
             adapter.lista=it
             adapter.notifyDataSetChanged()

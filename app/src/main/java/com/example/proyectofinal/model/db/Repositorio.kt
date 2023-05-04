@@ -58,6 +58,30 @@ class Repositorio @Inject constructor() {
         return listaComidas
     }
 
+    fun getComidasVeganas(): MutableList<Comida>{
+        return comidasVeganas
+    }
+
+    fun getComidasGlutenFree(): MutableList<Comida>{
+        return comidasGlutenFree
+    }
+
+    fun getComidasVeganasGlutenFree(): MutableList<Comida>{
+        return comidasVeganasGlutenFree
+    }
+
+    fun getIngrVeganos(): MutableList<Ingrediente>{
+        return ingrVeganos
+    }
+
+    fun getIngrGlutenFree(): MutableList<Ingrediente>{
+        return ingrGlutenFree
+    }
+
+    fun getIngrVeganosGlutenFree(): MutableList<Ingrediente>{
+        return ingrVeganosGlutenFree
+    }
+
     fun crearIngrediente(nuevoIngr: Ingrediente, img: Uri?) {
         if(img!=null){
             guardarImagenIngr(nuevoIngr, img)
@@ -132,21 +156,21 @@ class Repositorio @Inject constructor() {
             }
     }
 
-    fun readIngrSelect(): LiveData<MutableList<Ingrediente>>{
+    fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
         val mutableLista=MutableLiveData<MutableList<Ingrediente>>()
-        val lista= mutableListOf<Ingrediente>()
         db.getReference("ingredientes").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                lista.clear()
+                listaIngredientes.clear()
                 if(snapshot.exists()){
                     for(item in snapshot.children){
                         val ingrediente=item.getValue(Ingrediente::class.java)
                         if(ingrediente!=null){
-                            lista.add(ingrediente)
+                            listaIngredientes.add(ingrediente)
                         }
                     }
-                    lista.sortBy { it.nombre }
-                    mutableLista.value=lista
+                    listaIngredientes.sortBy { it.nombre!!.lowercase() }
+                    aplicarFiltrosIngr()
+                    mutableLista.value=listaIngredientes
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -155,9 +179,32 @@ class Repositorio @Inject constructor() {
         return mutableLista
     }
 
+    private fun aplicarFiltrosIngr() {
+        ingrVeganos.clear()
+        ingrGlutenFree.clear()
+        ingrVeganosGlutenFree.clear()
+        for(i in listaIngredientes){
+            filtrarIngr(i)
+        }
+    }
+
+    private fun filtrarIngr(i: Ingrediente) {
+        if(i.vegano!! && i.glutenFree!!){
+            ingrVeganos.add(i)
+            ingrGlutenFree.add(i)
+            ingrVeganosGlutenFree.add(i)
+        } else {
+            if(i.vegano!!){
+                ingrVeganos.add(i)
+            }
+            else if(i.glutenFree!!){
+                ingrGlutenFree.add(i)
+            }
+        }
+    }
+
     suspend fun readComidas(callback: (Boolean) -> Unit) {
         return withContext(Dispatchers.IO) {
-
             db.getReference("comidas").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     listaComidas.clear()
@@ -181,7 +228,9 @@ class Repositorio @Inject constructor() {
                         }
                         val raciones = comidaSnapshot.child("raciones").getValue(Int::class.java)!!
                         listaComidas.add(Comida(nombre, descripcion, tags, imagen, ingredientes, preparacion, raciones))
+                        listaComidas.sortBy { it.nombre!!.lowercase() }
                     }
+                    aplicarFiltrosComidas()
                     callback(true)
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -191,7 +240,42 @@ class Repositorio @Inject constructor() {
         }
     }
 
+    private fun aplicarFiltrosComidas() {
+        comidasVeganas.clear()
+        comidasGlutenFree.clear()
+        comidasVeganasGlutenFree.clear()
+        for(c in listaComidas){
+            filtrarComida(c)
+        }
+    }
 
+    private fun filtrarComida(comida: Comida) {
+        var vegana=true
+        var glutenFree=true
+        for(i in comida.ingredientes!!){
+            if(!i.vegano!!){
+                vegana=false
+            }
+            if(!i.glutenFree!!){
+                glutenFree=false
+            }
+            if(!vegana&&!glutenFree){
+                break
+            }
+        }
+        if(vegana&&glutenFree){
+            comidasVeganasGlutenFree.add(comida)
+            comidasVeganas.add(comida)
+            comidasGlutenFree.add(comida)
+        } else {
+            if(vegana){
+                comidasVeganas.add(comida)
+            }
+            else if(glutenFree){
+                comidasGlutenFree.add(comida)
+            }
+        }
+    }
 
 
 }

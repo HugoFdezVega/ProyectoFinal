@@ -122,8 +122,10 @@ class AddComidaActivity : AppCompatActivity() {
     }
 
     private fun onPasoDelete(posicion: Int) {
-        pasosAdapter.notifyItemRemoved(posicion)
-        listaPasos.removeAt(posicion)
+        if(listaPasos.size>1){
+            pasosAdapter.notifyItemRemoved(posicion)
+            listaPasos.removeAt(posicion)
+        }
     }
 
     private fun setListeners() {
@@ -259,7 +261,6 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
-
     private fun borrarComida() {
         if(binding.etNombreComida.isEnabled){
             Toast.makeText(this,"Error: No se puede borrar una comida que aún no ha sido creada", Toast.LENGTH_LONG).show()
@@ -289,6 +290,9 @@ class AddComidaActivity : AppCompatActivity() {
     private fun onIngrDelete(posicion: Int){
         listaIngredientes.removeAt(posicion)
         ingredientesAdapter.notifyItemRemoved(posicion)
+        if(listaIngredientes.size==0){
+            binding.tvSinIngredientes.isVisible=true
+        }
     }
 
 

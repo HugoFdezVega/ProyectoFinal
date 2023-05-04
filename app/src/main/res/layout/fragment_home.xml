@@ -11,6 +11,39 @@
         android:layout_height="match_parent"
         android:background="@color/color1">
 
+        <CheckBox
+            android:id="@+id/cbVeganoMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vegano"
+            app:layout_constraintBottom_toBottomOf="@+id/cbGlutenFreeMenu"
+            app:layout_constraintEnd_toStartOf="@+id/cbGlutenFreeMenu"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/cbGlutenFreeMenu" />
+
+        <CheckBox
+            android:id="@+id/cbGlutenFreeMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gluten Free"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/cbVeganoMenu"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:text="Filtros:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/cbVeganoMenu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cbVeganoMenu" />
+
         <TextView
             android:id="@+id/tvVacio"
             android:layout_width="350dp"
@@ -21,7 +54,7 @@
             android:textColor="@color/color3"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -52,20 +85,20 @@
             android:id="@+id/btGenerarMenu"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="10dp"
             android:backgroundTint="@color/color4"
             android:src="@drawable/carrito"
             android:text="Generar menú"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/cbGlutenFreeMenu" />
 
         <ImageButton
             android:id="@+id/btCarrito"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="57dp"
             android:layout_marginEnd="20dp"
             android:adjustViewBounds="true"
             android:backgroundTint="@color/color2"
@@ -84,6 +117,18 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recMenu" />
+
+        <ImageView
+            android:id="@+id/ivNotificacion"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="57dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/notificacion"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
