@@ -10,6 +10,7 @@ import android.widget.CheckBox
 import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -41,13 +42,13 @@ class ListasFragment : Fragment() {
     lateinit var adapterIngredientes: ListaIngredientesAdapter
     lateinit var adapterComidas: ListaComidasAdapter
     lateinit var pbListas: ProgressBar
+    lateinit var tvTotal: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
-        vm.inicializar()
     }
 
     override fun onCreateView(
@@ -57,26 +58,27 @@ class ListasFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_listas, container, false)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observarComidas()
+        observarIngredientes()
         inicializar(view)
         setListeners()
         setRecyclers(view)
-        //observarIngredientes()
 
     }
 
     private fun observarComidas() {
-        vm.isLoading.observe(viewLifecycleOwner, Observer {
-            pbListas.isVisible=it
-            if(!pbListas.isVisible){
-                rvListas.adapter=adapterComidas
-                adapterComidas.lista=vm.getListaComidas()
-                adapterComidas.notifyDataSetChanged()
-                comprobarFiltros()
-            }
+        vm.readComidas().observe(viewLifecycleOwner, Observer {
+            pbListas.isVisible=false
+            comprobarFiltros()
+        })
+    }
+
+    private fun observarIngredientes(){
+        vm.readIngredientes().observe(viewLifecycleOwner, Observer {
+            pbListas.isVisible=false
+            comprobarFiltros()
         })
     }
 
@@ -94,6 +96,7 @@ class ListasFragment : Fragment() {
             } else {
                 adapterComidas.lista=vm.getListaComidas()
             }
+            tvTotal.text="Total comidas: ${adapterComidas.lista.size}"
         } else {
             rvListas.adapter=adapterIngredientes
             if(cbVegano.isChecked&&cbGlutenFree.isChecked){
@@ -107,6 +110,7 @@ class ListasFragment : Fragment() {
             } else {
                 adapterIngredientes.lista=vm.getListaIngredientes()
             }
+            tvTotal.text="Total ingredientes: ${adapterIngredientes.lista.size}"
         }
     }
 
@@ -114,7 +118,6 @@ class ListasFragment : Fragment() {
         rvListas.layoutManager=LinearLayoutManager(view.context)
         adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onIngrDelete(it)},{onIngrUpdate(it)},admin)
         adapterComidas= ListaComidasAdapter(listaComidas,"null",{onComidaDelete(it)},{onComidaUpdate(it)})
-
     }
 
     private fun onComidaUpdate(it: Ingrediente) {
@@ -133,18 +136,6 @@ class ListasFragment : Fragment() {
         TODO("Not yet implemented")
     }
 
-/*
-    private fun observarIngredientes() {
-        vm.readIngredientes().observe(viewLifecycleOwner, Observer{
-                rvListas.adapter=adapterIngredientes
-                adapterIngredientes.lista=it
-                adapterIngredientes.notifyDataSetChanged()
-        })
-    }
- */
-
-
-
     private fun inicializar(view: View) {
         btAdd=view.findViewById(R.id.btAddListas)
         sbBusqueda=view.findViewById(R.id.sbListas)
@@ -154,6 +145,7 @@ class ListasFragment : Fragment() {
         rbIngredientes=view.findViewById(R.id.rbIngredientes)
         rvListas=view.findViewById(R.id.rvListas)
         pbListas=view.findViewById(R.id.pbListas)
+        tvTotal=view.findViewById(R.id.tvTotal)
     }
 
     private fun setListeners() {

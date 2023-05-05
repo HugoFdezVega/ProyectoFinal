@@ -68,6 +68,9 @@ class AddIngredienteActivity : AppCompatActivity() {
 
     private fun guardarIngrediente() {
         if(!existeError()){
+            // Si no hemos recogido datos, es un ingrediente nuevo, así que lo creamos pasándole null
+            //a la imagen y lo mandamos al vm junto con la img, que será null o no. De lo contrario,
+            //estamos editando un ingrediente así que lo creamos con todos sus datos y lo pasamos con img.
             if(datos==null){
                 nuevoIngr=Ingrediente(nombre,medida,"null",binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
             } else {
@@ -75,6 +78,7 @@ class AddIngredienteActivity : AppCompatActivity() {
             }
             vm.crearIngrediente(nuevoIngr!!, img)
         }
+        Toast.makeText(this, "Ingrediente creado correctamente", Toast.LENGTH_LONG).show()
         finish()
     }
 
@@ -85,8 +89,11 @@ class AddIngredienteActivity : AppCompatActivity() {
             binding.etNombreIngrediente.requestFocus()
             return true
         } else {
+            // Creamos un ingrediente ficticio para comprobar si ya existe en la listaIngr. Si existe y el etNombreIngrediente
+            //está editable, significa que intengamos crear un ingrediente repetido y da error. Si no, significa que no está
+            //repetido o que estamos editando un ingrediente, por lo que procedemos a guardar/editar.
             var ingrRepetido=Ingrediente(nombre)
-            if(vm.getListaIngredientes().contains(ingrRepetido)){
+            if(vm.getListaIngredientes().contains(ingrRepetido)&&binding.etNombreIngrediente.isEnabled){
                 Toast.makeText(this,"Ya existe un ingrediente con este nombre",Toast.LENGTH_LONG).show()
                 binding.etNombreIngrediente.requestFocus()
                 return true
@@ -102,6 +109,8 @@ class AddIngredienteActivity : AppCompatActivity() {
     }
 
     private fun comprobarAdmin() {
+        // Cogemos el array de admins y comprobamos si el correod el usuario actual está en dicho
+        //array. De ser así, es un admin y activamos el modo admin
         var admins=resources.getStringArray(R.array.admins)
         if(admins.contains(vm.obtenerUsuario())){
             modoAdmin()
@@ -109,6 +118,9 @@ class AddIngredienteActivity : AppCompatActivity() {
     }
 
     private fun modoAdmin() {
+        // Podemos la bandera de admin a true y activamos los controles para el administrador. Si no
+        //hemos recogido datos, significa que estamos creando así que permitidos editar el editText
+        //correspondiente. Si no, significa que estamos editando y cambiamos el text del botón guardar.
         admin=true
         binding.cbVeganoAddIngrediente.isEnabled=true
         binding.cbGlutenFreeAddIngrediente.isEnabled=true
@@ -117,6 +129,8 @@ class AddIngredienteActivity : AppCompatActivity() {
         binding.spMedidaIngrediente.isEnabled=true
         if(datos==null){
             binding.etNombreIngrediente.isEnabled=true
+        } else {
+            binding.btGuardarIngrediente.text = "Editar"
         }
     }
 

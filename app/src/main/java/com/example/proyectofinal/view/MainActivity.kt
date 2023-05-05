@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        observarIngredientes()
+        vm.inicializar()
         setListeners()
         comprobarEmail()
     }
@@ -75,12 +75,6 @@ class MainActivity : AppCompatActivity() {
                 entrarGoogle()
         }
 
-    }
-
-    private fun observarIngredientes() {
-        vm.readIngredientes().observe(this, Observer {
-
-        })
     }
 
     private fun entrarGoogle() {

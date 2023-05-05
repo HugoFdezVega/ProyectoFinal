@@ -17,15 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repo: Repositorio, private val prefs: Prefs): ViewModel() {
 
-    val isLoading=MutableLiveData<Boolean>()
-
     fun inicializar(){
-        viewModelScope.launch {
-            isLoading.postValue(true)
-            repo.readComidas{
-                isLoading.postValue(false)
-            }
-        }
+        readIngredientes()
+        readComidas()
     }
 
     fun guardarUsuario(usuario: String){
@@ -97,8 +91,20 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
     }
 
     fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
+        // Recoge el LiveData del método correspondiente del repositorio y lo devuelve a quien
+        //esté observando este método para que actualice lo que deba
         var lista=MutableLiveData<MutableList<Ingrediente>>()
         repo.readIngredientes().observeForever {
+            lista.value=it
+        }
+        return lista
+    }
+
+    fun readComidas(): LiveData<MutableList<Comida>>{
+        // Recoge el LiveData del método correspondiente del repositorio y lo devuelve a quien
+        //esté observando este método para que actualice lo que deba
+        var lista=MutableLiveData<MutableList<Comida>>()
+        repo.readComidas().observeForever {
             lista.value=it
         }
         return lista

@@ -40,16 +40,6 @@ class Repositorio @Inject constructor() {
         }
     }
 
-    suspend fun readAll():List<Comida>?{
-        return withContext(Dispatchers.IO){
-            val lista= mutableListOf<Comida>()
-
-            //Añadimos aqui la descarga de todas las comidas de Firebase
-
-            lista?: emptyList<Comida>()
-        }
-    }
-
     fun getListaIngredientes(): MutableList<Ingrediente>{
         return listaIngredientes
     }
@@ -110,9 +100,8 @@ class Repositorio @Inject constructor() {
 
     private fun guardarIngrediente(nuevoIngr: Ingrediente) {
         db.getReference("ingredientes").child(nuevoIngr.nombre!!).setValue(nuevoIngr).addOnSuccessListener {
-            //Se ha guardado el ingrediente, así que lo añadimos a la lista y la ordenamos
-            listaIngredientes.add(nuevoIngr)
-            listaIngredientes.sortBy {it.nombre}
+            //Se ha guardado el ingrediente, así que lo filtramos
+            filtrarIngr(nuevoIngr)
         }
             .addOnFailureListener {
                 println(it.message.toString())
@@ -129,9 +118,8 @@ class Repositorio @Inject constructor() {
 
     private fun guardarComida(nuevaComida: Comida) {
         db.getReference("comidas").child(nuevaComida.nombre!!).setValue(nuevaComida).addOnSuccessListener {
-            //Se ha guardado la comida, así que la añadimos a la lista y la ordenamos
-            //listaComidas.add(nuevaComida)
-            listaComidas.sortBy {it.nombre}
+            //Se ha guardado la comida, así que la filtramos
+            filtrarComida(nuevaComida)
         }
             .addOnFailureListener {
                 println(it.message.toString())
@@ -143,7 +131,7 @@ class Repositorio @Inject constructor() {
         val upload=imagen.putFile(img!!).addOnSuccessListener {
             //Se ha guardado la imagen
             imagen.downloadUrl.addOnSuccessListener {
-                //Descargamos la imagen recién guardada y la pasamos como String al ingrediente
+                //Descargamos la imagen recién guardada y la pasamos como String a la comida
                 nuevaComida.imagen=it.toString()
                 guardarComida(nuevaComida)
             }
@@ -157,6 +145,11 @@ class Repositorio @Inject constructor() {
     }
 
     fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
+        // Creamos un LiveData que devolveremos para que se le pueda poner un observer y recoger así
+        //los cambios que realicemos. Conectamos con la base de datos poniéndole un listener, de
+        //forma que cada vez que hagamos un cambio en la base de datos, este método lo escuchará
+        //y se ejecutará automáticamente, volviendo a descargar la lista y mandándola para que los
+        //observadores la actualicen automáticamente. También aplica los filtros correspondientes.
         val mutableLista=MutableLiveData<MutableList<Ingrediente>>()
         db.getReference("ingredientes").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -168,8 +161,10 @@ class Repositorio @Inject constructor() {
                             listaIngredientes.add(ingrediente)
                         }
                     }
+                    if(ingrVeganos.isEmpty()){
+                        aplicarFiltrosIngr()
+                    }
                     listaIngredientes.sortBy { it.nombre!!.lowercase() }
-                    aplicarFiltrosIngr()
                     mutableLista.value=listaIngredientes
                 }
             }
@@ -180,6 +175,7 @@ class Repositorio @Inject constructor() {
     }
 
     private fun aplicarFiltrosIngr() {
+        // Limpiamos las listas y filtramos todos los ingredientes
         ingrVeganos.clear()
         ingrGlutenFree.clear()
         ingrVeganosGlutenFree.clear()
@@ -189,58 +185,79 @@ class Repositorio @Inject constructor() {
     }
 
     private fun filtrarIngr(i: Ingrediente) {
+        // Intentamos borrar el ingrediente de cada una de las posibles listas por si se trata de
+        //un update. Después la añadimos a la que corresponda y por último ordenamos las listas.
         if(i.vegano!! && i.glutenFree!!){
+            ingrVeganos.remove(i)
+            ingrGlutenFree.remove(i)
+            ingrVeganosGlutenFree.remove(i)
             ingrVeganos.add(i)
             ingrGlutenFree.add(i)
             ingrVeganosGlutenFree.add(i)
         } else {
             if(i.vegano!!){
+                ingrVeganos.remove(i)
                 ingrVeganos.add(i)
             }
             else if(i.glutenFree!!){
+                ingrGlutenFree.remove(i)
                 ingrGlutenFree.add(i)
+            } else {
+                ingrVeganos.remove(i)
+                ingrGlutenFree.remove(i)
+                ingrVeganosGlutenFree.remove(i)
             }
         }
+        ingrVeganos.sortBy { it.nombre!!.lowercase() }
+        ingrGlutenFree.sortBy { it.nombre!!.lowercase() }
+        ingrVeganosGlutenFree.sortBy { it.nombre!!.lowercase() }
     }
 
-    suspend fun readComidas(callback: (Boolean) -> Unit) {
-        return withContext(Dispatchers.IO) {
-            db.getReference("comidas").addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    listaComidas.clear()
-                    for (comidaSnapshot in snapshot.children) {
-                        val nombre = comidaSnapshot.child("nombre").getValue(String::class.java)
-                        val descripcion =
-                            comidaSnapshot.child("descripcion").getValue(String::class.java)
-                        val tags = mutableListOf<String>()
-                        for (tagsSnapshot in comidaSnapshot.child("tags").children) {
-                            tags.add(tagsSnapshot.getValue(String::class.java)!!)
-                        }
-                        val imagen = comidaSnapshot.child("imagen").getValue(String::class.java)
-                        val ingredientes = mutableListOf<Ingrediente>()
-                        for (ingredienteSnapshot in comidaSnapshot.child("ingredientes").children) {
-                            val ingrediente = ingredienteSnapshot.getValue(Ingrediente::class.java)
-                            ingredientes.add(ingrediente!!)
-                        }
-                        val preparacion = mutableListOf<String>()
-                        for (preparacionSnapshot in comidaSnapshot.child("preparacion").children) {
-                            preparacion.add(preparacionSnapshot.getValue(String::class.java)!!)
-                        }
-                        val raciones = comidaSnapshot.child("raciones").getValue(Int::class.java)!!
-                        listaComidas.add(Comida(nombre, descripcion, tags, imagen, ingredientes, preparacion, raciones))
-                        listaComidas.sortBy { it.nombre!!.lowercase() }
+    fun readComidas(): LiveData<MutableList<Comida>>{
+        // Creamos un LiveData que devolveremos para que se le pueda poner un observer y recoger así
+        //los cambios que realicemos. Conectamos con la base de datos poniéndole un listener, de
+        //forma que cada vez que hagamos un cambio en la base de datos, este método lo escuchará
+        //y se ejecutará automáticamente, volviendo a descargar la lista y mandándola para que los
+        //observadores la actualicen automáticamente. También aplica los filtros correspondientes.
+        val mutableLista=MutableLiveData<MutableList<Comida>>()
+        db.getReference("comidas").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                listaComidas.clear()
+                for (comidaSnapshot in snapshot.children) {
+                    val nombre = comidaSnapshot.child("nombre").getValue(String::class.java)
+                    val descripcion =
+                        comidaSnapshot.child("descripcion").getValue(String::class.java)
+                    val tags = mutableListOf<String>()
+                    for (tagsSnapshot in comidaSnapshot.child("tags").children) {
+                        tags.add(tagsSnapshot.getValue(String::class.java)!!)
                     }
+                    val imagen = comidaSnapshot.child("imagen").getValue(String::class.java)
+                    val ingredientes = mutableListOf<Ingrediente>()
+                    for (ingredienteSnapshot in comidaSnapshot.child("ingredientes").children) {
+                        val ingrediente = ingredienteSnapshot.getValue(Ingrediente::class.java)
+                        ingredientes.add(ingrediente!!)
+                    }
+                    val preparacion = mutableListOf<String>()
+                    for (preparacionSnapshot in comidaSnapshot.child("preparacion").children) {
+                        preparacion.add(preparacionSnapshot.getValue(String::class.java)!!)
+                    }
+                    val raciones = comidaSnapshot.child("raciones").getValue(Int::class.java)!!
+                    listaComidas.add(Comida(nombre, descripcion, tags, imagen, ingredientes, preparacion, raciones))
+                }
+                if(comidasVeganas.isEmpty()){
                     aplicarFiltrosComidas()
-                    callback(true)
                 }
-                override fun onCancelled(error: DatabaseError) {
-
-                }
-            })
-        }
+                listaComidas.sortBy { it.nombre!!.lowercase() }
+                mutableLista.value=listaComidas
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        return mutableLista
     }
 
     private fun aplicarFiltrosComidas() {
+        // Limpiamos las listas y filtramos todas las comidas
         comidasVeganas.clear()
         comidasGlutenFree.clear()
         comidasVeganasGlutenFree.clear()
@@ -250,6 +267,12 @@ class Repositorio @Inject constructor() {
     }
 
     private fun filtrarComida(comida: Comida) {
+        // Creamos dos banderas para cada una de las listas e iteramos la lista de ingredientes de
+        //la comida. Si el ingrediente iterado no es vegano o glutenFree, se actualiza la bandera
+        //correspondiente. De ser false ambas banderas, salimos de la iteración y procedemos a filtrar
+        //la comida según el resultado de las banderas. Intentamos borrar la comida de cada una de las
+        // posibles listas por si se trata de un update. Después la añadimos a la que corresponda y
+        // por último ordenamos las listas.
         var vegana=true
         var glutenFree=true
         for(i in comida.ingredientes!!){
@@ -264,17 +287,29 @@ class Repositorio @Inject constructor() {
             }
         }
         if(vegana&&glutenFree){
+            comidasVeganasGlutenFree.remove(comida)
+            comidasVeganas.remove(comida)
+            comidasGlutenFree.remove(comida)
             comidasVeganasGlutenFree.add(comida)
             comidasVeganas.add(comida)
             comidasGlutenFree.add(comida)
         } else {
             if(vegana){
+                comidasVeganas.remove(comida)
                 comidasVeganas.add(comida)
             }
             else if(glutenFree){
+                comidasGlutenFree.remove(comida)
                 comidasGlutenFree.add(comida)
+            } else {
+                comidasVeganasGlutenFree.remove(comida)
+                comidasVeganas.remove(comida)
+                comidasGlutenFree.remove(comida)
             }
         }
+        comidasVeganas.sortBy { it.nombre!!.lowercase() }
+        comidasGlutenFree.sortBy { it.nombre!!.lowercase() }
+        comidasVeganasGlutenFree.sortBy { it.nombre!!.lowercase() }
     }
 
 

@@ -27,7 +27,7 @@
             android:id="@+id/tvNombreComidaLista"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="30dp"
             android:text="Macarrones con tomate"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -44,6 +44,7 @@
             android:justificationMode="inter_word"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
             android:textStyle="italic"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/ivComidaLista"
@@ -72,6 +73,96 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tvTag1ComidaLista"
             app:layout_constraintTop_toTopOf="@+id/tvTag1ComidaLista" />
+
+        <TextView
+            android:id="@+id/tvRacionesLb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
+            android:layout_marginTop="15dp"
+            android:text="Raciones:"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDescrComidaLista" />
+
+        <TextView
+            android:id="@+id/tbNumRaciones"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:editable="false"
+            android:text="1"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tvRacionesLb"
+            app:layout_constraintStart_toEndOf="@+id/tvRacionesLb"
+            app:layout_constraintTop_toTopOf="@+id/tvRacionesLb" />
+
+        <ImageButton
+            android:id="@+id/btMasRaciones"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="5dp"
+            android:backgroundTint="@color/color2"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tbNumRaciones"
+            app:layout_constraintStart_toEndOf="@+id/tbNumRaciones"
+            app:layout_constraintTop_toTopOf="@+id/tbNumRaciones"
+            app:srcCompat="@drawable/sumar" />
+
+        <ImageButton
+            android:id="@+id/btMenosRaciones"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="1dp"
+            android:backgroundTint="@color/color2"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btMasRaciones"
+            app:layout_constraintStart_toEndOf="@+id/btMasRaciones"
+            app:layout_constraintTop_toTopOf="@+id/btMasRaciones"
+            app:srcCompat="@drawable/restar" />
+
+        <Button
+            android:id="@+id/btOtra"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/color4"
+            android:text="Otra"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/btParecida"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvRacionesLb" />
+
+        <Button
+            android:id="@+id/btParecida"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/color4"
+            android:text="Parecida"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btOtra"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btOtra"
+            app:layout_constraintTop_toTopOf="@+id/btOtra" />
+
+        <TextView
+            android:id="@+id/tvDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Lunes"
+            android:textColor="@color/color3"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

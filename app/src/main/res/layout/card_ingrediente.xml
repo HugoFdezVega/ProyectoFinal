@@ -43,7 +43,8 @@
             android:layout_marginStart="50dp"
             android:ems="10"
             android:hint="Cantidad"
-            android:inputType="numberSigned"
+            android:inputType="numberDecimal"
+            android:textDirection="rtl"
             android:visibility="gone"
             app:layout_constraintStart_toEndOf="@+id/ivIngredienteAdd"
             app:layout_constraintTop_toBottomOf="@+id/cbVeganAdd" />
