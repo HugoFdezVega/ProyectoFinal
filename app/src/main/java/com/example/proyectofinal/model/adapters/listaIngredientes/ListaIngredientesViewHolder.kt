@@ -28,6 +28,8 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
         }
         if(ingrediente.imagen!="null"){
             Picasso.get().load(ingrediente.imagen).into(binding.ivIngredienteAdd)
+        } else {
+            Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/ingredientes%2Fingrediente.png?alt=media&token=698498aa-9d2a-49c4-940e-03f1578cec5f").into(binding.ivIngredienteAdd)
         }
         binding.tvNombreIngredienteAdd.text=ingrediente.nombre
         binding.cbVeganAdd.isChecked= ingrediente.vegano!!

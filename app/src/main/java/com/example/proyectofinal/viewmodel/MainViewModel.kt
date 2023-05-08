@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repo: Repositorio, private val prefs: Prefs): ViewModel() {
+    var ldListaMenu=MutableLiveData<MutableList<Comida>>()
 
     fun inicializar(){
         readIngredientes()
@@ -46,9 +47,11 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         }
     }
 
+/*
     fun usuarioFormateado(): String{
         return prefs.getUser()!!.replace(".","-")
     }
+ */
 
     fun getListaIngredientes(): MutableList<Ingrediente>{
         return repo.getListaIngredientes()
@@ -108,6 +111,23 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
             lista.value=it
         }
         return lista
+    }
+
+    fun readMenu(){
+        viewModelScope.launch {
+            repo.ldListaMenu.observeForever { menuSemanal ->
+                ldListaMenu.value = menuSemanal
+            }
+            repo.readMenu()
+        }
+    }
+
+    fun generarMenu(vegano: Boolean, glutenFree: Boolean){
+        repo.generarMenu(vegano, glutenFree)
+    }
+
+    fun otraComida(posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
+        return repo.otraComida(posicion, vegano, glutenFree)
     }
 
 

@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.proyectofinal.databinding.ActivitySeleccionarIngredienteBinding
 import com.example.proyectofinal.model.Ingrediente
-import com.example.proyectofinal.model.adapters.seleccionarIngr.SeleccionarIngrAdapter
+import com.example.proyectofinal.model.adapters.listaIngredientes.seleccionarIngr.SeleccionarIngrAdapter
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

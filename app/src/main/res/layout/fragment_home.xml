@@ -65,21 +65,23 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recMenu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/btGenerarMenu"
-            tools:layout_editor_absoluteX="0dp" />
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/btGenerarLista"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btGenerarMenu" />
 
         <Button
             android:id="@+id/btGenerarLista"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="10dp"
             android:text="Guardar lista de la compra"
-            android:visibility="invisible"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recMenu" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btGenerarMenu"
@@ -116,7 +118,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recMenu" />
+            app:layout_constraintTop_toTopOf="@+id/recMenu" />
 
         <ImageView
             android:id="@+id/ivNotificacion"

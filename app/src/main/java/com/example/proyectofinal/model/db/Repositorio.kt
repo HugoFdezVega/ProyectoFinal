@@ -5,16 +5,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
+import com.example.proyectofinal.model.storage.Prefs
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
-class Repositorio @Inject constructor() {
+class Repositorio @Inject constructor(private val prefs: Prefs) {
     private val db= FirebaseDatabase.getInstance("https://randomeater-e0c93-default-rtdb.europe-west1.firebasedatabase.app/")
     private val storage= FirebaseStorage.getInstance("gs://randomeater-e0c93.appspot.com")
     private var listaIngredientes= mutableListOf<Ingrediente>()
@@ -27,6 +30,7 @@ class Repositorio @Inject constructor() {
     private var comidasVeganasGlutenFree= mutableListOf<Comida>()
     private var menuSemanal= mutableListOf<Comida>()
     private var listaCompra= mutableListOf<String>()
+    var ldListaMenu=MutableLiveData<MutableList<Comida>>()
 
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
@@ -38,6 +42,10 @@ class Repositorio @Inject constructor() {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,pass).addOnCompleteListener {
             callback(it.isSuccessful)
         }
+    }
+
+    fun usuarioFormateado(): String{
+        return prefs.getUser()!!.replace(".","-")
     }
 
     fun getListaIngredientes(): MutableList<Ingrediente>{
@@ -187,25 +195,19 @@ class Repositorio @Inject constructor() {
     private fun filtrarIngr(i: Ingrediente) {
         // Intentamos borrar el ingrediente de cada una de las posibles listas por si se trata de
         //un update. Después la añadimos a la que corresponda y por último ordenamos las listas.
+        ingrVeganos.remove(i)
+        ingrGlutenFree.remove(i)
+        ingrVeganosGlutenFree.remove(i)
         if(i.vegano!! && i.glutenFree!!){
-            ingrVeganos.remove(i)
-            ingrGlutenFree.remove(i)
-            ingrVeganosGlutenFree.remove(i)
             ingrVeganos.add(i)
             ingrGlutenFree.add(i)
             ingrVeganosGlutenFree.add(i)
         } else {
             if(i.vegano!!){
-                ingrVeganos.remove(i)
                 ingrVeganos.add(i)
             }
             else if(i.glutenFree!!){
-                ingrGlutenFree.remove(i)
                 ingrGlutenFree.add(i)
-            } else {
-                ingrVeganos.remove(i)
-                ingrGlutenFree.remove(i)
-                ingrVeganosGlutenFree.remove(i)
             }
         }
         ingrVeganos.sortBy { it.nombre!!.lowercase() }
@@ -275,6 +277,9 @@ class Repositorio @Inject constructor() {
         // por último ordenamos las listas.
         var vegana=true
         var glutenFree=true
+        comidasVeganasGlutenFree.remove(comida)
+        comidasVeganas.remove(comida)
+        comidasGlutenFree.remove(comida)
         for(i in comida.ingredientes!!){
             if(!i.vegano!!){
                 vegana=false
@@ -287,29 +292,114 @@ class Repositorio @Inject constructor() {
             }
         }
         if(vegana&&glutenFree){
-            comidasVeganasGlutenFree.remove(comida)
-            comidasVeganas.remove(comida)
-            comidasGlutenFree.remove(comida)
             comidasVeganasGlutenFree.add(comida)
             comidasVeganas.add(comida)
             comidasGlutenFree.add(comida)
         } else {
             if(vegana){
-                comidasVeganas.remove(comida)
                 comidasVeganas.add(comida)
             }
             else if(glutenFree){
-                comidasGlutenFree.remove(comida)
                 comidasGlutenFree.add(comida)
-            } else {
-                comidasVeganasGlutenFree.remove(comida)
-                comidasVeganas.remove(comida)
-                comidasGlutenFree.remove(comida)
             }
         }
         comidasVeganas.sortBy { it.nombre!!.lowercase() }
         comidasGlutenFree.sortBy { it.nombre!!.lowercase() }
         comidasVeganasGlutenFree.sortBy { it.nombre!!.lowercase() }
+    }
+
+    suspend fun readMenu() {
+        try {
+            val usuario = usuarioFormateado()
+            val snapshot = db.getReference("${usuario}/menu").get().await()
+
+            for (comidaSnapshot in snapshot.children) {
+                val nombre = comidaSnapshot.child("nombre").getValue(String::class.java)
+                val descripcion = comidaSnapshot.child("descripcion").getValue(String::class.java)
+                val tags = mutableListOf<String>()
+                for (tagsSnapshot in comidaSnapshot.child("tags").children) {
+                    tags.add(tagsSnapshot.getValue(String::class.java)!!)
+                }
+                val imagen = comidaSnapshot.child("imagen").getValue(String::class.java)
+                val ingredientes = mutableListOf<Ingrediente>()
+                for (ingredienteSnapshot in comidaSnapshot.child("ingredientes").children) {
+                    val ingrediente = ingredienteSnapshot.getValue(Ingrediente::class.java)
+                    ingredientes.add(ingrediente!!)
+                }
+                val preparacion = mutableListOf<String>()
+                for (preparacionSnapshot in comidaSnapshot.child("preparacion").children) {
+                    preparacion.add(preparacionSnapshot.getValue(String::class.java)!!)
+                }
+                val raciones = comidaSnapshot.child("raciones").getValue(Int::class.java)!!
+                menuSemanal.add(Comida(nombre, descripcion, tags, imagen, ingredientes, preparacion, raciones))
+            }
+            ldListaMenu.value = menuSemanal
+        } catch (e: java.lang.Exception){
+            print(e.message.toString())
+            ldListaMenu.value = menuSemanal
+        }
+    }
+
+    fun generarMenu(vegano: Boolean, glutenFree: Boolean){
+        menuSemanal.clear()
+        var lista=dirimirListaMenu(vegano, glutenFree)
+        do {
+            var random= Random.nextInt(lista.size)
+            if(!menuSemanal.contains(lista[random])){
+                menuSemanal.add(lista[random])
+            }
+        } while (menuSemanal.size<5)
+        ldListaMenu.value=menuSemanal
+        guardarMenu()
+    }
+
+    private fun guardarMenu() {
+        val usuario=usuarioFormateado()
+            db.getReference("${usuario}").child("menu").setValue(menuSemanal).addOnSuccessListener {
+
+            }
+                .addOnFailureListener {
+                    println(it.message.toString())
+                }
+
+
+    }
+
+    fun otraComida(posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
+        var lista=dirimirListaMenu(vegano, glutenFree)
+        var otraComida: Comida
+        do {
+            var random= Random.nextInt(lista.size)
+            otraComida=lista[random]
+        } while (menuSemanal.contains(otraComida))
+        menuSemanal[posicion]=otraComida
+        guardarMenu()
+        return otraComida
+    }
+
+    /*
+    fun comidaParecida(comida: Comida,posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
+        var lista=dirimirListaMenu(vegano, glutenFree)
+
+    }
+
+     */
+
+    private fun dirimirListaMenu(vegano: Boolean, glutenFree: Boolean): MutableList<Comida>{
+        var lista: MutableList<Comida>
+        if(vegano&&glutenFree){
+            lista=comidasVeganasGlutenFree
+        } else {
+            if(vegano){
+                lista=comidasVeganas
+            }
+            else if(glutenFree){
+                lista=comidasGlutenFree
+            } else {
+                lista=listaComidas
+            }
+        }
+        return lista
     }
 
 

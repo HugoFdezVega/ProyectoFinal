@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.example.proyectofinal.databinding.ActivityMainBinding
 import com.example.proyectofinal.viewmodel.MainViewModel
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        vm.inicializar()
+        observarIngredientes()
+        observarComidas()
         setListeners()
         comprobarEmail()
     }
@@ -132,6 +134,17 @@ class MainActivity : AppCompatActivity() {
     //Sobreescribir el método para que no haga nada al pulsar el botón de retroceso
     override fun onBackPressed() {
 
+    }
+    private fun observarComidas() {
+        vm.readComidas().observe(this, Observer {
+
+        })
+    }
+
+    private fun observarIngredientes(){
+        vm.readIngredientes().observe(this, Observer {
+
+        })
     }
 
 

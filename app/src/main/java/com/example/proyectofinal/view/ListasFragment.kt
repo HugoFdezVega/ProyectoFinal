@@ -117,10 +117,18 @@ class ListasFragment : Fragment() {
     private fun setRecyclers(view: View) {
         rvListas.layoutManager=LinearLayoutManager(view.context)
         adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onIngrDelete(it)},{onIngrUpdate(it)},admin)
-        adapterComidas= ListaComidasAdapter(listaComidas,"null",{onComidaDelete(it)},{onComidaUpdate(it)})
+        adapterComidas= ListaComidasAdapter(listaComidas,"null",{onComidaDelete(it)},{onComidaUpdate(it)},{onComidaOtra(it)},{onComidaParecida(it)})
     }
 
-    private fun onComidaUpdate(it: Ingrediente) {
+    private fun onComidaParecida(it: Int) {
+
+    }
+
+    private fun onComidaOtra(it: Int) {
+
+    }
+
+    private fun onComidaUpdate(it: Comida) {
         TODO("Not yet implemented")
     }
 
