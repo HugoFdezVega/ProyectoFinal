@@ -9,7 +9,7 @@ import com.squareup.picasso.Picasso
 
 class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
     private val binding=CardComidaBinding.bind(v)
-    private val diasSemana= arrayListOf<String>("Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo")
+    private val diasSemana= arrayListOf<String>("Lunes","Martes","Miércoles","Jueves","Viernes")
 
     fun render(comida: Comida, actividad: String, onItemDelete: (Int) -> Unit, onItemUpdate: (Comida) -> Unit, onComidaOtra: (Int) -> Unit, onComidaParecida: (Int) -> Unit){
         if(actividad=="menu"){

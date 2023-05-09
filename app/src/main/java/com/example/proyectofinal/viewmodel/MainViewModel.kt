@@ -18,11 +18,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repo: Repositorio, private val prefs: Prefs): ViewModel() {
     var ldListaMenu=MutableLiveData<MutableList<Comida>>()
 
-    fun inicializar(){
-        readIngredientes()
-        readComidas()
-    }
-
     fun guardarUsuario(usuario: String){
         prefs.setUser(usuario)
     }
@@ -113,6 +108,8 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         return lista
     }
 
+    //Corrutina que observará los cambios en el LiveData del menú semanal y que ejecutará el método
+    //para realizar una primera lectura
     fun readMenu(){
         viewModelScope.launch {
             repo.ldListaMenu.observeForever { menuSemanal ->
@@ -128,6 +125,10 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
 
     fun otraComida(posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
         return repo.otraComida(posicion, vegano, glutenFree)
+    }
+
+    fun comidaParecida(comida: Comida,posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
+        return repo.comidaParecida(comida, posicion, vegano, glutenFree)
     }
 
 

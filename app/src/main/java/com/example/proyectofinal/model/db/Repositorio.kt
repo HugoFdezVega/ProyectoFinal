@@ -309,7 +309,12 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
     }
 
     suspend fun readMenu() {
+        // Realizamos una lectura asíncrona del menú de la base de datos, esta vez sin un listener para
+        //que no se repita cada vez que modificamos el menú (que será muchas veces). Después, lo asignamos
+        //a su lista local y al LiveData para que lo observe la activity pertinente. Lo hacemos con un
+        //try-catch porque si es la primera vez que entramos, lanzará un nullPointerException.
         try {
+            menuSemanal.clear()
             val usuario = usuarioFormateado()
             val snapshot = db.getReference("${usuario}/menu").get().await()
 
@@ -340,6 +345,11 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    // Comprobamos la lista que tenemos que usar de base para crear el menú según los booleanos que
+    //recibimos por parámetro y después vamos generando números aleatorios en base a dicha lista y
+    //recuperando las comidas a las que nos apunten, añadiendolas al menú si no estaban presentes y
+    //repitiendo esto hasta que tengamos las 5 comidas. Después guardamos el menú en bd y lo asignamos
+    //a nuestro LiveData para que se actualicen las listas de los observadores.
     fun generarMenu(vegano: Boolean, glutenFree: Boolean){
         menuSemanal.clear()
         var lista=dirimirListaMenu(vegano, glutenFree)
@@ -350,21 +360,24 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
         } while (menuSemanal.size<5)
         ldListaMenu.value=menuSemanal
-        guardarMenu()
+        guardarMenu(menuSemanal)
     }
 
-    private fun guardarMenu() {
+    // Recibimos una lista que guardamos en bd dentro del usuario y pisando el nodo menú
+    private fun guardarMenu(menu: MutableList<Comida>) {
         val usuario=usuarioFormateado()
-            db.getReference("${usuario}").child("menu").setValue(menuSemanal).addOnSuccessListener {
-
+        db.getReference("${usuario}").child("menu").setValue(menu).addOnSuccessListener {
+        //El menú se guardó correctamente
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
             }
-                .addOnFailureListener {
-                    println(it.message.toString())
-                }
-
-
     }
 
+    // Recibimos la posición de la comida que queremos modificar y los booleanos para ver en qué lista
+    //nos basamos. Después generamos un número aleatorio en base a dicha lista y recuperamos la comida
+    //a la que apunta hasta que esta no esté en el menú. Actualizamos el menú, lo guardamos y devolvemos
+    //la comida.
     fun otraComida(posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
         var lista=dirimirListaMenu(vegano, glutenFree)
         var otraComida: Comida
@@ -373,18 +386,35 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             otraComida=lista[random]
         } while (menuSemanal.contains(otraComida))
         menuSemanal[posicion]=otraComida
-        guardarMenu()
+        guardarMenu(menuSemanal)
         return otraComida
     }
 
-    /*
+    // Recibimos la comida en que nos basaremos, su posición y los booleanos para ver en qué lista nos
+    //basamos. Una vez la tengamos, iteramos el contenido de dicha lista guardando en otra de comidas
+    //parecidas aquellas que contengan un tag que coincida con la comida recibida por parámetro. Luego
+    //generamos el número aleatorio en base a la lista de comidas parecidas y recuperamos la comida a la
+    //que apunta hasta que no esté en el menú. Actualizamos el menú, lo guardamos y devolvemos la comida.
     fun comidaParecida(comida: Comida,posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
         var lista=dirimirListaMenu(vegano, glutenFree)
-
+        var listaParecidas=mutableListOf<Comida>()
+        var comidaParecia: Comida
+        for(c in lista){
+            if(c.tags!![0]==comida.tags!![0]||c.tags!![1]==comida.tags!![0]||c.tags!![0]==comida.tags!![1]||c.tags!![1]==comida.tags!![1]){
+                listaParecidas.add(c)
+            }
+        }
+        do {
+            var random=Random.nextInt(listaParecidas.size)
+            comidaParecia=listaParecidas[random]
+        } while (menuSemanal.contains(comidaParecia))
+        menuSemanal[posicion]=comidaParecia
+        guardarMenu(menuSemanal)
+        return comidaParecia
     }
 
-     */
-
+    // Método que nos va a devolver una de las listas de comidas en función de los booleanos que
+    //recibamos por parámetro.
     private fun dirimirListaMenu(vegano: Boolean, glutenFree: Boolean): MutableList<Comida>{
         var lista: MutableList<Comida>
         if(vegano&&glutenFree){

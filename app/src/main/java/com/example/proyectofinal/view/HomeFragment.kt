@@ -1,5 +1,6 @@
 package com.example.proyectofinal.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -55,8 +56,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        inicializar(view)
         observarMenu()
+        inicializar(view)
         setRecycler(view)
         setListeners()
     }
@@ -64,6 +65,10 @@ class HomeFragment : Fragment() {
     private fun setListeners() {
         btGenerarMenu.setOnClickListener {
             vm.generarMenu(cbVeganoMenu.isChecked,cbGlutenFreeMenu.isChecked)
+        }
+        btCarrito.setOnClickListener {
+            ivNotificacion.isGone=true
+            startActivity(Intent(btCarrito.context,ListaCompraActivity::class.java))
         }
     }
 
@@ -73,10 +78,19 @@ class HomeFragment : Fragment() {
         recMenu.adapter=adapter
     }
 
+    // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la comida en función
+    //de dicha posición, la posición y si están o no pulsamos los checkboxes. La comida devuelta la
+    //ponemos en la posición que corresponde de nuestra lista, se la pasamos al adapter y notificamos.
     private fun onComidaParecida(posicion: Int) {
-
+        val comidaParecida=vm.comidaParecida(listaMenu[posicion],posicion,cbVeganoMenu.isChecked,cbGlutenFreeMenu.isChecked)
+        listaMenu[posicion]=comidaParecida
+        adapter.lista=listaMenu
+        adapter.notifyItemChanged(posicion)
     }
 
+    // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la posición y si
+    // están o no pulsamos los checkboxes. La comida devuelta la ponemos en la posición que corresponde
+    // de nuestra lista, se la pasamos al adapter y notificamos.
     private fun onComidaOtra(posicion: Int) {
         val otraComida=vm.otraComida(posicion, cbVeganoMenu.isChecked,cbGlutenFreeMenu.isChecked)
         listaMenu[posicion]=otraComida
@@ -92,6 +106,9 @@ class HomeFragment : Fragment() {
 
     }
 
+    // Observamos el LiveData que se nos manda desde el repositorio. Si su tamaño es inferior a 5
+    //establecemos los controles en su estado inicial. De lo contrario, pintamos lo necesario,
+    //asignamos el valor del LiveData a nuestra lista, se la pasamos al adapter y notificamos.
     private fun observarMenu() {
         vm.ldListaMenu.observe(viewLifecycleOwner, Observer{
             pbHome.isVisible=false
@@ -108,7 +125,7 @@ class HomeFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
-        vm.readMenu()
+            vm.readMenu()
     }
 
     private fun inicializar(view: View) {
