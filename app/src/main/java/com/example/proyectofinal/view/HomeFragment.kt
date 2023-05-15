@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyectofinal.R
 import com.example.proyectofinal.model.Comida
+import com.example.proyectofinal.model.Ingrediente
 import com.example.proyectofinal.model.adapters.listaComidas.ListaComidasAdapter
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeFragment : Fragment() {
     private val vm: MainViewModel by viewModels()
     private var listaMenu= mutableListOf<Comida>()
+    private var listaRaciones= mutableListOf<Int>()
 
     lateinit var cbVeganoMenu: CheckBox
     lateinit var cbGlutenFreeMenu: CheckBox
@@ -70,12 +72,67 @@ class HomeFragment : Fragment() {
             ivNotificacion.isGone=true
             startActivity(Intent(btCarrito.context,ListaCompraActivity::class.java))
         }
+        btGenerarListaCompra.setOnClickListener {
+            guardarListaCompra()
+            ivNotificacion.isGone=false
+        }
+    }
+
+    private fun guardarListaCompra() {
+        var copiaMenu= mutableListOf<Comida>()
+        for(i in 0 until listaMenu.size){
+            copiaMenu.add(Comida(listaMenu[i]))
+            copiaMenu[i].raciones=listaRaciones[i]
+        }
+        vm.guardarMenu(copiaMenu)
+        val ingredientesTotales=obtenerIngredientesTotales(copiaMenu)
+        val listaCompra=generarListaCompra(ingredientesTotales)
+        vm.guardarListaCompra(listaCompra)
+    }
+
+    private fun generarListaCompra(ingredientesTotales: MutableList<Ingrediente>): String {
+        var listaCompra=""
+        for(i in ingredientesTotales){
+            listaCompra+="- ${i.nombre}: ${i.cantidad} ${i.medida}\n"
+        }
+        return listaCompra
+    }
+
+    private fun obtenerIngredientesTotales(copiaMenu: MutableList<Comida>): MutableList<Ingrediente> {
+        var ingredientesTotales= mutableListOf<Ingrediente>()
+        for(c in copiaMenu){
+            for(i in c.ingredientes!!){
+                if(ingredientesTotales.contains(i)){
+                    val index=ingredientesTotales.indexOf(i)
+                    ingredientesTotales[index].cantidad=ingredientesTotales[index].cantidad!!+i.cantidad!!*c.raciones
+                } else {
+                    val nuevoIngr=Ingrediente(i)
+                    nuevoIngr.cantidad=nuevoIngr.cantidad!!*c.raciones
+                    if(nuevoIngr.cantidad!!>0){
+                        ingredientesTotales.add(nuevoIngr)
+                    }
+                }
+            }
+        }
+        return ingredientesTotales
     }
 
     private fun setRecycler(view: View) {
         recMenu.layoutManager=LinearLayoutManager(view.context)
-        adapter= ListaComidasAdapter(listaMenu,"menu",{onComidaDelete(it)},{onComidaUpdate(it)},{onComidaOtra(it)},{onComidaParecida(it)})
+        adapter= ListaComidasAdapter(listaMenu,"menu",{onComidaDelete(it)},{onComidaUpdate(it)},{onComidaOtra(it)},{onComidaParecida(it)},{posicion, raciones -> onComidaRaciones(posicion, raciones)})
         recMenu.adapter=adapter
+    }
+
+    private fun onComidaDelete(posicion: Int) {
+
+    }
+
+    private fun onComidaUpdate(comida: Comida) {
+
+    }
+
+    private fun onComidaRaciones(posicion: Int, raciones: Int) {
+        listaRaciones[posicion]=raciones
     }
 
     // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la comida en función
@@ -98,14 +155,6 @@ class HomeFragment : Fragment() {
         adapter.notifyItemChanged(posicion)
     }
 
-    private fun onComidaUpdate(comida: Comida) {
-
-    }
-
-    private fun onComidaDelete(posicion: Int) {
-
-    }
-
     // Observamos el LiveData que se nos manda desde el repositorio. Si su tamaño es inferior a 5
     //establecemos los controles en su estado inicial. De lo contrario, pintamos lo necesario,
     //asignamos el valor del LiveData a nuestra lista, se la pasamos al adapter y notificamos.
@@ -123,9 +172,17 @@ class HomeFragment : Fragment() {
                 listaMenu=it
                 adapter.lista=listaMenu
                 adapter.notifyDataSetChanged()
+                obtenerRaciones()
             }
         })
             vm.readMenu()
+    }
+
+    private fun obtenerRaciones() {
+        listaRaciones.clear()
+        for(i in listaMenu){
+            listaRaciones.add(i.raciones)
+        }
     }
 
     private fun inicializar(view: View) {

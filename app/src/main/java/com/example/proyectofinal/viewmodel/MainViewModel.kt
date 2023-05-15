@@ -1,6 +1,7 @@
 package com.example.proyectofinal.viewmodel
 
 import android.net.Uri
+import android.view.Menu
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -129,6 +130,22 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
 
     fun comidaParecida(comida: Comida,posicion: Int, vegano: Boolean, glutenFree: Boolean): Comida{
         return repo.comidaParecida(comida, posicion, vegano, glutenFree)
+    }
+
+    fun guardarMenu(menu: MutableList<Comida>){
+        repo.guardarMenu(menu)
+    }
+
+    fun guardarListaCompra(listaCompra: String){
+        repo.guardarListaCompra(listaCompra)
+    }
+
+    fun readListaCompra(): LiveData<String>{
+        var listaCompra=MutableLiveData<String>()
+        repo.readListaCompra().observeForever{
+            listaCompra.value=it
+        }
+        return listaCompra
     }
 
 

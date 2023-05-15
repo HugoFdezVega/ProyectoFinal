@@ -364,7 +364,7 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
     }
 
     // Recibimos una lista que guardamos en bd dentro del usuario y pisando el nodo menú
-    private fun guardarMenu(menu: MutableList<Comida>) {
+    fun guardarMenu(menu: MutableList<Comida>) {
         val usuario=usuarioFormateado()
         db.getReference("${usuario}").child("menu").setValue(menu).addOnSuccessListener {
         //El menú se guardó correctamente
@@ -430,6 +430,33 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
         }
         return lista
+    }
+
+    fun guardarListaCompra(listaCompra: String){
+        val usuario=usuarioFormateado()
+        db.getReference("${usuario}").child("listaCompra").setValue(listaCompra).addOnSuccessListener {
+            //Lista de la compra guardada correctamente
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
+            }
+    }
+
+    fun readListaCompra(): LiveData<String>{
+        val usuario=usuarioFormateado()
+        val ldListaCompra=MutableLiveData<String>()
+        db.getReference("${usuario}/listaCompra").addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    val listaCompra=snapshot.getValue(String::class.java)
+                    ldListaCompra.value=listaCompra!!
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        return ldListaCompra
     }
 
 

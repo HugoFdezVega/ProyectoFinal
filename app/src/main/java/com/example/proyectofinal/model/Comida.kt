@@ -20,4 +20,8 @@ data class Comida(
     override fun hashCode(): Int {
         return nombre!!.lowercase().hashCode()
     }
+
+    //Constructor copia para evitar aliasing
+    constructor(comida: Comida): this (comida.nombre, comida.descripcion, comida.tags, comida.imagen, comida.ingredientes, comida.preparacion, comida.raciones)
+
 }

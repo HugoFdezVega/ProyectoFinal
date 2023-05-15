@@ -10,8 +10,17 @@ import com.squareup.picasso.Picasso
 class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
     private val binding=CardComidaBinding.bind(v)
     private val diasSemana= arrayListOf<String>("Lunes","Martes","Miércoles","Jueves","Viernes")
+    private var index=0
 
-    fun render(comida: Comida, actividad: String, onItemDelete: (Int) -> Unit, onItemUpdate: (Comida) -> Unit, onComidaOtra: (Int) -> Unit, onComidaParecida: (Int) -> Unit){
+    fun render(
+        comida: Comida,
+        actividad: String,
+        onItemDelete: (Int) -> Unit,
+        onItemUpdate: (Comida) -> Unit,
+        onComidaOtra: (Int) -> Unit,
+        onComidaParecida: (Int) -> Unit,
+        onComidaRaciones: (Int, Int) -> Unit
+    ){
         if(actividad=="menu"){
             binding.tvRacionesLb.isGone=false
             binding.tvNumRaciones.isGone=false
@@ -26,6 +35,8 @@ class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
         binding.tvTag1ComidaLista.text = comida.tags!![0]
         binding.tvTag2ComidaLista.text = comida.tags!![1]
         binding.tvDescrComidaLista.text = comida.descripcion
+        binding.tvNumRaciones.text=comida.raciones.toString()
+        index=comida.raciones
         if(comida.imagen!="null"){
             Picasso.get().load(comida.imagen).into(binding.ivComidaLista)
         } else {
@@ -36,6 +47,18 @@ class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
         }
         binding.btParecida.setOnClickListener {
             onComidaParecida(adapterPosition)
+        }
+        binding.btMasRaciones.setOnClickListener {
+            index++
+            binding.tvNumRaciones.text=index.toString()
+            onComidaRaciones(adapterPosition, index)
+        }
+        binding.btMenosRaciones.setOnClickListener {
+            if(index!=0){
+                index--
+                binding.tvNumRaciones.text=index.toString()
+                onComidaRaciones(adapterPosition, index)
+            }
         }
     }
 }
