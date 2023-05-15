@@ -3,6 +3,7 @@ package com.example.proyectofinal.model.adapters.listaComidas
 import android.view.View
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
+import com.example.proyectofinal.R
 import com.example.proyectofinal.databinding.CardComidaBinding
 import com.example.proyectofinal.model.Comida
 import com.squareup.picasso.Picasso
@@ -59,6 +60,9 @@ class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
                 binding.tvNumRaciones.text=index.toString()
                 onComidaRaciones(adapterPosition, index)
             }
+        }
+        itemView.setOnClickListener {
+            onItemUpdate(comida)
         }
     }
 }

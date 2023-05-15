@@ -53,7 +53,7 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
     private fun onItemSelected(ingrediente: Ingrediente) {
         val i=Intent()
         i.apply {
-            putExtra("seleccionado",ingrediente)
+            putExtra("seleccionado",Ingrediente(ingrediente))
         }
         setResult(RESULT_OK,i)
         finish()

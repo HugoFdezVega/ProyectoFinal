@@ -121,27 +121,29 @@ class ListasFragment : Fragment() {
     }
 
     private fun onComidaRaciones(posicion: Int, raciones: Int) {
-
     }
 
     private fun onComidaParecida(it: Int) {
-
     }
 
     private fun onComidaOtra(it: Int) {
-
-    }
-
-    private fun onComidaUpdate(it: Comida) {
-        TODO("Not yet implemented")
     }
 
     private fun onComidaDelete(it: Int) {
-        TODO("Not yet implemented")
     }
 
-    private fun onIngrUpdate(it: Ingrediente) {
-        TODO("Not yet implemented")
+    private fun onComidaUpdate(comida: Comida) {
+        val intent=Intent(btAdd.context, AddComidaActivity::class.java).apply {
+            putExtra("comida", comida)
+        }
+        startActivity(intent)
+    }
+
+    private fun onIngrUpdate(ingrediente: Ingrediente) {
+        val i=Intent(btAdd.context,AddIngredienteActivity::class.java).apply {
+            putExtra("ingrediente",ingrediente)
+        }
+        startActivity(i)
     }
 
     private fun onIngrDelete(it: Int) {

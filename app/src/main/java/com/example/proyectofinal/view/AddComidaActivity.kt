@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
@@ -74,22 +75,36 @@ class AddComidaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding=ActivityAddComidaBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setListeners()
         inicializar()
+        setListeners()
     }
 
     private fun inicializar() {
-        recogerDatos()
         comprobarAdmin()
         setRecyclers()
-
+        recogerDatos()
     }
 
     private fun recogerDatos() {
         datos=intent.extras
         if(datos!=null){
             comida=datos?.get("comida") as Comida
-            // TODO Pintamos los datos obtenidos
+            if(comida.imagen!="null"){
+                Picasso.get().load(comida.imagen).into(binding.ivComida)
+            } else {
+                Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/comidas%2Fcomida.png?alt=media&token=f677154c-3aa8-4f30-a320-4606ff385bcf").into(binding.ivComida)
+            }
+            binding.etNombreComida.setText(comida.nombre)
+            binding.etTag1.setText(comida.tags!![0])
+            binding.etTag2.setText(comida.tags!![1])
+            binding.etDescripcionComida.setText(comida.descripcion)
+            listaIngredientes= comida.ingredientes!!
+            listaPasos= comida.preparacion!!
+            ingredientesAdapter.lista=listaIngredientes
+            ingredientesAdapter.notifyDataSetChanged()
+            binding.tvSinIngredientes.isGone=true
+            pasosAdapter.lista=listaPasos
+            pasosAdapter.notifyDataSetChanged()
         }
     }
 
@@ -105,8 +120,14 @@ class AddComidaActivity : AppCompatActivity() {
         binding.etTag1.isEnabled=true
         binding.etTag2.isEnabled=true
         binding.etDescripcionComida.isEnabled=true
+        binding.btAddIngredientesComida.isVisible=true
+        binding.btAdPasos.isVisible=true
+        binding.btGuardarComida.isGone=false
+        binding.btBorrarComida.isGone=false
         if(datos==null){
             binding.etNombreComida.isEnabled=true
+        } else {
+            binding.btGuardarComida.setText("Editar")
         }
     }
 
@@ -119,13 +140,6 @@ class AddComidaActivity : AppCompatActivity() {
         binding.rvIngredientesComida.layoutManager=LinearLayoutManager(this)
         ingredientesAdapter= ListaIngredientesAdapter(listaIngredientes,"add",{onIngrDelete(it)},{onIngrUpdate(it)}, admin)
         binding.rvIngredientesComida.adapter=ingredientesAdapter
-    }
-
-    private fun onPasoDelete(posicion: Int) {
-        if(listaPasos.size>1){
-            pasosAdapter.notifyItemRemoved(posicion)
-            listaPasos.removeAt(posicion)
-        }
     }
 
     private fun setListeners() {
@@ -146,8 +160,10 @@ class AddComidaActivity : AppCompatActivity() {
                 crearComida()
             }
         }
-        binding.ivComida.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        if(admin){
+            binding.ivComida.setOnClickListener {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
         }
     }
 
@@ -202,6 +218,8 @@ class AddComidaActivity : AppCompatActivity() {
         }
         return obtenido
     }
+
+
 
     // Este método va a recorrer todos los elementos del recycler de ingredientes, obteniendo la cantidad de su EditText.
     //Después comprobará que no esté en blanco (de lo contrario, informa del error, retorna true y detiene la ejecución)
@@ -276,6 +294,10 @@ class AddComidaActivity : AppCompatActivity() {
         binding.scrollView.smoothScrollTo(0, binding.btAddIngredientesComida.top) //Scrolleamos hacia el botón
         binding.rvIngredientesComida.scrollToPosition(listaIngredientes.size-1) //Bajamos el recycler
         binding.tvSinIngredientes.isVisible=false
+        binding.scrollView.post {
+            binding.scrollView.fullScroll(View.FOCUS_DOWN)
+        }
+        binding.rvPasos.requestLayout()
     }
 
     //Método que agrega un paso en blanco al recycler y a la lista
@@ -284,6 +306,10 @@ class AddComidaActivity : AppCompatActivity() {
         pasosAdapter.notifyItemInserted(listaPasos.size-1)
         binding.rvPasos.scrollToPosition(listaPasos.size-1) //Bajamos el recycler
         binding.scrollView.smoothScrollTo(0, binding.btAdPasos.top) //Scrolleamos hacia el botón
+        binding.scrollView.post {
+            binding.scrollView.fullScroll(View.FOCUS_DOWN)
+        }
+        binding.rvPasos.requestLayout()
     }
 
     //Elimina un paso del reycler y de la lista
@@ -292,6 +318,13 @@ class AddComidaActivity : AppCompatActivity() {
         ingredientesAdapter.notifyItemRemoved(posicion)
         if(listaIngredientes.size==0){
             binding.tvSinIngredientes.isVisible=true
+        }
+    }
+
+    private fun onPasoDelete(posicion: Int) {
+        if(listaPasos.size>1){
+            pasosAdapter.notifyItemRemoved(posicion)
+            listaPasos.removeAt(posicion)
         }
     }
 

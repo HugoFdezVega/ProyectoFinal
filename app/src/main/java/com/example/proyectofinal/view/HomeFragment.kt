@@ -124,11 +124,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun onComidaDelete(posicion: Int) {
-
     }
 
     private fun onComidaUpdate(comida: Comida) {
-
+        val intent=Intent(pbHome.context, AddComidaActivity::class.java).apply {
+            putExtra("comida", comida)
+        }
+        startActivity(intent)
     }
 
     private fun onComidaRaciones(posicion: Int, raciones: Int) {

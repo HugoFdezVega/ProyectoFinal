@@ -53,9 +53,6 @@ class AddIngredienteActivity : AppCompatActivity() {
         binding.btGuardarIngrediente.setOnClickListener {
             guardarIngrediente()
         }
-        binding.ivIngrediente.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
         binding.spMedidaIngrediente.onItemSelectedListener=object:AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 medida= parent!!.getItemAtPosition(position).toString()
@@ -63,7 +60,11 @@ class AddIngredienteActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-
+        if(admin){
+            binding.ivIngrediente.setOnClickListener {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+        }
     }
 
     private fun guardarIngrediente() {
@@ -114,6 +115,8 @@ class AddIngredienteActivity : AppCompatActivity() {
         var admins=resources.getStringArray(R.array.admins)
         if(admins.contains(vm.obtenerUsuario())){
             modoAdmin()
+        } else {
+            binding.spMedidaIngrediente.isEnabled=false
         }
     }
 
@@ -145,7 +148,11 @@ class AddIngredienteActivity : AppCompatActivity() {
             var listaMedida=resources.getStringArray(R.array.Unidades)
             var index=listaMedida.indexOf(ingrediente.medida)
             binding.spMedidaIngrediente.setSelection(index)
-            Picasso.get().load(ingrediente.imagen).into(binding.ivIngrediente)
+            if(ingrediente.imagen!="null"){
+                Picasso.get().load(ingrediente.imagen).into(binding.ivIngrediente)
+            } else {
+                Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/ingredientes%2Fingrediente.png?alt=media&token=698498aa-9d2a-49c4-940e-03f1578cec5f").into(binding.ivIngrediente)
+            }
         }
     }
 

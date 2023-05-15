@@ -50,10 +50,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        observarIngredientes()
-        observarComidas()
+        inicializarListas()
         setListeners()
         comprobarEmail()
+    }
+
+    private fun inicializarListas() {
+        observarIngredientes()
+        observarComidas()
     }
 
     private fun comprobarEmail() {

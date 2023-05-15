@@ -1,7 +1,11 @@
 package com.example.proyectofinal.view
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -27,6 +31,17 @@ class ListaCompraActivity : AppCompatActivity() {
         binding.btVolverListaCompra.setOnClickListener {
             finish()
         }
+        binding.btCopiarListaCompra.setOnClickListener {
+            copiarPortapapeles()
+        }
+    }
+
+    private fun copiarPortapapeles() {
+        val textoCopiar=binding.etListaCompra.text.toString()
+        val clipboardManager=getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData=ClipData.newPlainText("texto",textoCopiar)
+        clipboardManager.setPrimaryClip(clipData)
+        Toast.makeText(this, "Texto copiado en portapapeles", Toast.LENGTH_LONG).show()
     }
 
     private fun observarListaCompra() {
@@ -36,4 +51,7 @@ class ListaCompraActivity : AppCompatActivity() {
             }
         })
     }
+
+
+
 }

@@ -34,6 +34,7 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
         binding.tvNombreIngredienteAdd.text=ingrediente.nombre
         binding.cbVeganAdd.isChecked= ingrediente.vegano!!
         binding.cbGlutenFreeAdd.isChecked=ingrediente.glutenFree!!
+        binding.etCantidadIngredienteAdd.setText(ingrediente.cantidad.toString())
         itemView.setOnClickListener {
             onItemUpdate(ingrediente)
         }
