@@ -10,13 +10,7 @@ import com.squareup.picasso.Picasso
 class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
     private val binding=CardIngredienteBinding.bind(v)
 
-    fun render(
-        ingrediente: Ingrediente,
-        actividad: String,
-        onItemDelete: (Int) -> Unit,
-        onItemUpdate: (Ingrediente) -> Unit,
-        admin: Boolean
-    ){
+    fun render(ingrediente: Ingrediente, actividad: String, onItemDelete: (Int) -> Unit, onItemUpdate: (Ingrediente) -> Unit, admin: Boolean, onCantidadUpdate: (Ingrediente) -> Unit){
         if(actividad=="add" && admin){
             binding.etCantidadIngredienteAdd.isGone=false
             binding.tvUnidadIngredienteAdd.isGone=false
@@ -37,6 +31,12 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
         binding.etCantidadIngredienteAdd.setText(ingrediente.cantidad.toString())
         itemView.setOnClickListener {
             onItemUpdate(ingrediente)
+        }
+        binding.etCantidadIngredienteAdd.setOnClickListener {
+            onCantidadUpdate(ingrediente)
+        }
+        binding.tvUnidadIngredienteAdd.setOnClickListener {
+            onCantidadUpdate(ingrediente)
         }
 
     }

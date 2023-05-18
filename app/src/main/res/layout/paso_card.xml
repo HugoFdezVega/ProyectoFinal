@@ -10,16 +10,20 @@
         android:layout_height="wrap_content"
         android:paddingBottom="5dp">
 
-        <EditText
+        <TextView
             android:id="@+id/etPaso"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="19dp"
+            android:clickable="true"
             android:ems="10"
-            android:enabled="false"
+            android:enabled="true"
+            android:focusable="auto"
             android:gravity="start|top"
             android:inputType="textMultiLine"
+            android:text="Prueba"
+            android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@+id/tvNPaso"
             app:layout_constraintTop_toTopOf="parent" />
 

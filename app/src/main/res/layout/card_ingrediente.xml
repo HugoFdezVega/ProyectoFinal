@@ -36,16 +36,22 @@
             app:layout_constraintStart_toEndOf="@+id/ivIngredienteAdd"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
+        <TextView
             android:id="@+id/etCantidadIngredienteAdd"
             android:layout_width="85dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
+            android:clickable="true"
+            android:editable="false"
             android:ems="10"
+            android:enabled="true"
+            android:focusable="false"
             android:hint="Cantidad"
             android:inputType="numberDecimal"
+            android:minHeight="40dp"
             android:textDirection="rtl"
-            android:visibility="gone"
+            android:textSize="20sp"
+            android:visibility="visible"
             app:layout_constraintStart_toEndOf="@+id/ivIngredienteAdd"
             app:layout_constraintTop_toBottomOf="@+id/cbVeganAdd" />
 
@@ -56,7 +62,8 @@
             android:layout_marginStart="5dp"
             android:text="Cucharadas"
             android:textSize="16sp"
-            android:visibility="gone"
+            android:textStyle="bold"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/etCantidadIngredienteAdd"
             app:layout_constraintStart_toEndOf="@+id/etCantidadIngredienteAdd"
             app:layout_constraintTop_toTopOf="@+id/etCantidadIngredienteAdd"

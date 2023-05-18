@@ -6,15 +6,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.proyectofinal.R
 import com.example.proyectofinal.databinding.ActivityAddComidaBinding
+import com.example.proyectofinal.databinding.DialogCantidadBinding
+import com.example.proyectofinal.databinding.DialogPasoBinding
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
 import com.example.proyectofinal.model.adapters.listaIngredientes.ListaIngredientesAdapter
@@ -40,11 +44,17 @@ class AddComidaActivity : AppCompatActivity() {
     //Recoge el ingrediente (y la posicion) del ingrediente que actualicemos/borremos al hacerle click
     private val responseLauncherUpdate=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.resultCode==RESULT_OK){
-            val ingredieneRetorno=it.data?.getSerializableExtra("retorno") as Ingrediente
-            var indice=listaIngredientes.indexOf(ingredieneRetorno)
+            val ingredienteRetorno=it.data?.getSerializableExtra("retorno") as Ingrediente
+            val ingredienteBorrado=it.data?.getSerializableExtra("borrado") as Boolean
+            var indice=listaIngredientes.indexOf(ingredienteRetorno)
             listaIngredientes.removeAt(indice)
-            listaIngredientes.add(indice,ingredieneRetorno)
-            pasosAdapter.notifyItemChanged(indice)
+            if(!ingredienteBorrado){
+                listaIngredientes.add(indice,ingredienteRetorno)
+                ingredientesAdapter.lista=listaIngredientes
+                ingredientesAdapter.notifyItemChanged(indice)
+            } else {
+                ingredientesAdapter.notifyItemRemoved(indice)
+            }
         }
     }
 
@@ -56,7 +66,7 @@ class AddComidaActivity : AppCompatActivity() {
     }
 
     private val vm: MainViewModel by viewModels()
-    private var listaPasos= mutableListOf("")
+    private var listaPasos= mutableListOf<String>()
     private var listaIngredientes= mutableListOf<Ingrediente>()
     private var datos: Bundle? =null
     private var admin=false
@@ -80,13 +90,13 @@ class AddComidaActivity : AppCompatActivity() {
     }
 
     private fun inicializar() {
+        datos=intent.extras
         comprobarAdmin()
         setRecyclers()
         recogerDatos()
     }
 
     private fun recogerDatos() {
-        datos=intent.extras
         if(datos!=null){
             comida=datos?.get("comida") as Comida
             if(comida.imagen!="null"){
@@ -105,6 +115,7 @@ class AddComidaActivity : AppCompatActivity() {
             binding.tvSinIngredientes.isGone=true
             pasosAdapter.lista=listaPasos
             pasosAdapter.notifyDataSetChanged()
+            binding.tvSinPasos.isGone=true
         }
     }
 
@@ -124,6 +135,9 @@ class AddComidaActivity : AppCompatActivity() {
         binding.btAdPasos.isVisible=true
         binding.btGuardarComida.isGone=false
         binding.btBorrarComida.isGone=false
+        binding.ivComida.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
         if(datos==null){
             binding.etNombreComida.isEnabled=true
         } else {
@@ -134,13 +148,15 @@ class AddComidaActivity : AppCompatActivity() {
     private fun setRecyclers() {
         //Recycler de los pasos
         binding.rvPasos.layoutManager=LinearLayoutManager(this)
-        pasosAdapter= ListaPasosAdapter(listaPasos,{onPasoDelete(it)},admin)
+        pasosAdapter= ListaPasosAdapter(listaPasos,{onPasoDelete(it)},admin,{onPasoUpdate(it)})
         binding.rvPasos.adapter=pasosAdapter
         //Recycler de los ingredientes
         binding.rvIngredientesComida.layoutManager=LinearLayoutManager(this)
-        ingredientesAdapter= ListaIngredientesAdapter(listaIngredientes,"add",{onIngrDelete(it)},{onIngrUpdate(it)}, admin)
+        ingredientesAdapter= ListaIngredientesAdapter(listaIngredientes,"add",{onIngrDelete(it)},{onIngrUpdate(it)}, admin, {onCantidadUpdate(it)})
         binding.rvIngredientesComida.adapter=ingredientesAdapter
     }
+
+
 
     private fun setListeners() {
         binding.btAddIngredientesComida.setOnClickListener {
@@ -160,13 +176,9 @@ class AddComidaActivity : AppCompatActivity() {
                 crearComida()
             }
         }
-        if(admin){
-            binding.ivComida.setOnClickListener {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }
-        }
     }
 
+    /*
     private fun crearComida() {
         //Mediante estos métodos comprobamos que no haya errores en los elementos de los recyclers
         if(obtenerCantidades() && obtenerPasos()){
@@ -219,8 +231,6 @@ class AddComidaActivity : AppCompatActivity() {
         return obtenido
     }
 
-
-
     // Este método va a recorrer todos los elementos del recycler de ingredientes, obteniendo la cantidad de su EditText.
     //Después comprobará que no esté en blanco (de lo contrario, informa del error, retorna true y detiene la ejecución)
     // y lo asignará a la cantidad del ingrediente de su posición correspondiente en la lista de ingredientes.
@@ -242,6 +252,25 @@ class AddComidaActivity : AppCompatActivity() {
             }
         }
         return obtenido
+    }
+     */
+
+    private fun crearComida() {
+        val tags= arrayListOf<String>()
+        tags.add(tag1)
+        tags.add(tag2)
+        // Si no tenemos datos de otra activity, es que estamos creando un nuevo ingrediente,
+        //por tanto, le asignamos la imagen a null provisionalmente. Si tenemos datos, es que
+        //estamos editando una comida y, por tanto, le asignamos la imagen que tenía ya.
+        if(datos==null){
+            nuevaComida=Comida(nombre,descr,tags,"null",listaIngredientes,listaPasos)
+        } else {
+            nuevaComida=Comida(nombre,descr,tags,comida.imagen,listaIngredientes,listaPasos)
+        }
+        //Creamos la nueva comida con la comida y la img que se haya seleccionado
+        vm.crearComida(nuevaComida!!,img)
+        Toast.makeText(this, "Comida creada correctamente", Toast.LENGTH_LONG).show()
+        finish()
     }
 
     // Este método comprueba que no haya errores en ninguno de los campos y que no se repita el nombre
@@ -270,9 +299,18 @@ class AddComidaActivity : AppCompatActivity() {
             binding.etDescripcionComida.setError("Lad descripción de la comida no puede estar vacía")
             binding.etDescripcionComida.requestFocus()
             return true
-        } else if(binding.etNombreComida.isEnabled && vm.getListaComidas().contains(Comida(nombre))){
+        }
+        else if(binding.etNombreComida.isEnabled && vm.getListaComidas().contains(Comida(nombre))){
             binding.etNombreComida.setError("Ya existe una comida con este nombre")
             binding.etNombreComida.requestFocus()
+            return true
+        }
+        else if(listaIngredientes.isEmpty()){
+            Toast.makeText(this, "ERROR: La lista de ingredientes no puede estar vacía",Toast.LENGTH_LONG).show()
+            return true
+        }
+        else if(listaPasos.isEmpty()){
+            Toast.makeText(this, "ERROR: La lista de pasos no puede estar vacía",Toast.LENGTH_LONG).show()
             return true
         } else {
             return false
@@ -283,7 +321,10 @@ class AddComidaActivity : AppCompatActivity() {
         if(binding.etNombreComida.isEnabled){
             Toast.makeText(this,"Error: No se puede borrar una comida que aún no ha sido creada", Toast.LENGTH_LONG).show()
         } else {
-            // TODO agregar lógica para borrar comida
+            val listaComidas=vm.getListaComidas()
+            val indice=listaComidas.indexOf(Comida(binding.etNombreComida.text.toString()))
+            val comidaParaBorrar=listaComidas[indice]
+            //vm.borrarComida(comidaParaBorrar)
         }
     }
 
@@ -294,22 +335,36 @@ class AddComidaActivity : AppCompatActivity() {
         binding.scrollView.smoothScrollTo(0, binding.btAddIngredientesComida.top) //Scrolleamos hacia el botón
         binding.rvIngredientesComida.scrollToPosition(listaIngredientes.size-1) //Bajamos el recycler
         binding.tvSinIngredientes.isVisible=false
-        binding.scrollView.post {
-            binding.scrollView.fullScroll(View.FOCUS_DOWN)
-        }
-        binding.rvPasos.requestLayout()
     }
 
-    //Método que agrega un paso en blanco al recycler y a la lista
+    //Método que agrega un paso al recycler y a la lista
     private fun agregarPaso() {
-        listaPasos.add("")
-        pasosAdapter.notifyItemInserted(listaPasos.size-1)
+        val builder = AlertDialog.Builder(this)
+        val inflater=layoutInflater
+        val dialogLayout=inflater.inflate(R.layout.dialog_paso,null)
+        val etPaso=dialogLayout.findViewById<TextView>(R.id.etDialogPaso)
+        with(builder){
+            setTitle("Introduzca el paso que desea agregar a la receta:")
+            setPositiveButton("Aceptar"){dialog, wich->
+                val textoPaso=etPaso.text.toString().trim()
+                if(textoPaso.isBlank()){
+                    Toast.makeText(this@AddComidaActivity,"Error: El contenido del paso no puede estar vacío", Toast.LENGTH_LONG).show()
+                } else {
+                    listaPasos.add(textoPaso)
+                    pasosAdapter.notifyItemInserted(listaPasos.size-1)
+                    binding.tvSinPasos.isGone=true
+                    dialog.dismiss()
+                }
+            }
+            setNegativeButton("Cancelar"){dialog, wich->
+                dialog.dismiss()
+            }
+            setCancelable(false)
+            setView(dialogLayout)
+            show()
+        }
         binding.rvPasos.scrollToPosition(listaPasos.size-1) //Bajamos el recycler
         binding.scrollView.smoothScrollTo(0, binding.btAdPasos.top) //Scrolleamos hacia el botón
-        binding.scrollView.post {
-            binding.scrollView.fullScroll(View.FOCUS_DOWN)
-        }
-        binding.rvPasos.requestLayout()
     }
 
     //Elimina un paso del reycler y de la lista
@@ -317,14 +372,15 @@ class AddComidaActivity : AppCompatActivity() {
         listaIngredientes.removeAt(posicion)
         ingredientesAdapter.notifyItemRemoved(posicion)
         if(listaIngredientes.size==0){
-            binding.tvSinIngredientes.isVisible=true
+            binding.tvSinIngredientes.isGone=false
         }
     }
 
     private fun onPasoDelete(posicion: Int) {
-        if(listaPasos.size>1){
-            pasosAdapter.notifyItemRemoved(posicion)
-            listaPasos.removeAt(posicion)
+        listaPasos.removeAt(posicion)
+        pasosAdapter.notifyItemRemoved(posicion)
+        if(listaPasos.size==0){
+            binding.tvSinPasos.isGone=false
         }
     }
 
@@ -334,5 +390,72 @@ class AddComidaActivity : AppCompatActivity() {
             putExtra("ingrediente",ingrediente)
         }
         responseLauncherUpdate.launch(i)
+    }
+
+    private fun onCantidadUpdate(ingr: Ingrediente) {
+        val builder=AlertDialog.Builder(this)
+        val inflater=layoutInflater
+        val dialogLayout=inflater.inflate(R.layout.dialog_cantidad,null)
+        val etCantidad=dialogLayout.findViewById<EditText>(R.id.etDialogCantidad)
+        val tvMedida=dialogLayout.findViewById<TextView>(R.id.tvDialogMedida)
+        tvMedida.text=ingr.medida
+        etCantidad.setText(ingr.cantidad.toString())
+        with(builder){
+            setTitle("Introduzca la cantidad de ${ingr.nombre} que desea agregar:")
+            setPositiveButton("Aceptar") { dialog, which ->
+                val textoCantidad = etCantidad.text.toString().trim()
+                if(textoCantidad.isBlank()){
+                    Toast.makeText(this@AddComidaActivity,"Error: La cantidad no puede estar vacía", Toast.LENGTH_LONG).show()
+                } else {
+                    val cantidad=textoCantidad.toDouble()
+                    if(cantidad<=0.0){
+                        Toast.makeText(this@AddComidaActivity,"Error: La cantidad debe ser mayor que 0", Toast.LENGTH_LONG).show()
+                    } else {
+                        val cantidad=textoCantidad.toDouble()
+                        ingr.cantidad=cantidad
+                        val posicion=listaIngredientes.indexOf(ingr)
+                        listaIngredientes[posicion]=ingr
+                        ingredientesAdapter.lista=listaIngredientes
+                        ingredientesAdapter.notifyItemChanged(posicion)
+                        dialog.dismiss()
+                    }
+                }
+            }
+            setNegativeButton("Cancelar") { dialog, which ->
+                dialog.dismiss()
+            }
+            setCancelable(false)
+            setView(dialogLayout)
+            show()
+        }
+    }
+
+    private fun onPasoUpdate(oldPaso: String) {
+        val builder = AlertDialog.Builder(this)
+        val inflater=layoutInflater
+        val dialogLayout=inflater.inflate(R.layout.dialog_paso,null)
+        val etPaso=dialogLayout.findViewById<TextView>(R.id.etDialogPaso)
+        etPaso.setText(oldPaso)
+        with(builder){
+            setTitle("Introduzca el paso que desea agregar a la receta:")
+            setPositiveButton("Aceptar"){dialog, wich->
+                val textoPaso=etPaso.text.toString().trim()
+                if(textoPaso.isBlank()){
+                    Toast.makeText(this@AddComidaActivity,"Error: El contenido del paso no puede estar vacío", Toast.LENGTH_LONG).show()
+                } else {
+                    val posicion=listaPasos.indexOf(oldPaso)
+                    listaPasos[posicion]=textoPaso
+                    pasosAdapter.lista=listaPasos
+                    pasosAdapter.notifyItemChanged(posicion)
+                    dialog.dismiss()
+                }
+            }
+            setNegativeButton("Cancelar"){dialog, wich->
+                dialog.dismiss()
+            }
+            setCancelable(false)
+            setView(dialogLayout)
+            show()
+        }
     }
 }

@@ -7,14 +7,15 @@ import com.example.proyectofinal.R
 
 class ListaPasosAdapter(var lista: MutableList<String>,
                         private val onItemDelete:(Int)->Unit,
-                        private val admin: Boolean): RecyclerView.Adapter<ListaPasosViewHolder>() {
+                        private val admin: Boolean,
+                        private val onPasoUpdate:(String)->Unit,): RecyclerView.Adapter<ListaPasosViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaPasosViewHolder {
         val v=LayoutInflater.from(parent.context).inflate(R.layout.paso_card,parent,false)
         return ListaPasosViewHolder(v)
     }
 
     override fun onBindViewHolder(holder: ListaPasosViewHolder, position: Int) {
-        holder.render(lista[position], onItemDelete, admin)
+        holder.render(lista[position], onItemDelete, onPasoUpdate,admin)
     }
 
     override fun getItemCount(): Int {

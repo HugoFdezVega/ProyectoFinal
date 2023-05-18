@@ -8,14 +8,19 @@ import com.example.proyectofinal.databinding.PasoCardBinding
 class ListaPasosViewHolder(v: View): RecyclerView.ViewHolder(v){
     val binding=PasoCardBinding.bind(v)
 
-    fun render(paso: String, onItemDelete: (Int) -> Unit, admin: Boolean){
+    fun render(paso: String, onItemDelete: (Int) -> Unit, onPasoUpdate: (String) -> Unit, admin: Boolean){
         binding.tvNPaso.text=" - Paso ${adapterPosition+1}"
         binding.etPaso.setText(paso)
         if(admin){
             binding.btBorrarPaso.isGone=false
-            binding.etPaso.isEnabled=true
             binding.btBorrarPaso.setOnClickListener {
                 onItemDelete(adapterPosition)
+            }
+            itemView.setOnClickListener {
+                onPasoUpdate(paso)
+            }
+            binding.etPaso.setOnClickListener {
+                onPasoUpdate(paso)
             }
         }
     }
