@@ -1,4 +1,4 @@
-package com.example.proyectofinal.model.adapters.listaIngredientes.seleccionarIngr
+package com.example.proyectofinal.model.adapters.seleccionarIngr
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

@@ -1,4 +1,4 @@
-package com.example.proyectofinal.model.adapters.listaIngredientes.seleccionarIngr
+package com.example.proyectofinal.model.adapters.seleccionarIngr
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

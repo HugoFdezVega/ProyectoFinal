@@ -46,7 +46,11 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
     }
 
     fun usuarioFormateado(): String{
-        return prefs.getUser()!!.replace(".","-")
+        return prefs.getUser()!!.replace(".","*")
+    }
+
+    fun usuarioDesformateado(userFormateado: String): String{
+        return userFormateado.replace("*",".")
     }
 
     fun getListaIngredientes(): MutableList<Ingrediente>{

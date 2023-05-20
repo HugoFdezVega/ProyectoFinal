@@ -16,10 +16,7 @@ class ListaPasosViewHolder(v: View): RecyclerView.ViewHolder(v){
             binding.btBorrarPaso.setOnClickListener {
                 onItemDelete(adapterPosition)
             }
-            itemView.setOnClickListener {
-                onPasoUpdate(paso)
-            }
-            binding.etPaso.setOnClickListener {
+            binding.btPaso.setOnClickListener {
                 onPasoUpdate(paso)
             }
         }

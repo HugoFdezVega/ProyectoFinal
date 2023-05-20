@@ -3,6 +3,7 @@ package com.example.proyectofinal.view
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -126,6 +127,10 @@ class MainActivity : AppCompatActivity() {
         } else if (pass.isBlank()) {
             binding.etPass.setError("La contraseña no puede estar vacía")
             binding.etPass.requestFocus()
+            return true
+        } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            binding.etEmail.setError("El formato del email es incorrecto")
+            binding.etEmail.requestFocus()
             return true
         } else if (pass.length < 6) {
             binding.etPass.setError("La contraseña debe tener al menos 6 caracteres")

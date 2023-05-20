@@ -32,7 +32,7 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
         itemView.setOnClickListener {
             onItemUpdate(ingrediente)
         }
-        binding.etCantidadIngredienteAdd.setOnClickListener {
+        binding.btCantidad.setOnClickListener {
             onCantidadUpdate(ingrediente)
         }
         binding.tvUnidadIngredienteAdd.setOnClickListener {

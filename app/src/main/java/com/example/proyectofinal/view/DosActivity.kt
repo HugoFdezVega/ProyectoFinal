@@ -3,6 +3,8 @@ package com.example.proyectofinal.view
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -16,12 +18,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class DosActivity : AppCompatActivity(), InterfazMenuBar {
     private val fragments= arrayOf(HomeFragment(),ListasFragment())
     private val vm: MainViewModel by viewModels()
+    private var admin=false
 
     lateinit var binding: ActivityDosBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityDosBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        comprobarAdmin()
     }
 
     override fun botonPulsado(boton: Int) {
@@ -40,6 +44,34 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
             replace(R.id.fcGenerico,fragment)
             addToBackStack(null)
         }
+    }
+
+    private fun comprobarAdmin() {
+        var admins=resources.getStringArray(R.array.admins)
+        if(admins.contains(vm.obtenerUsuario())){
+            admin=true
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_opciones, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.itemSugerencias->{
+                if(admin){
+                    startActivity(Intent(this, SugerenciasAdminActivity::class.java))
+                } else {
+                    startActivity(Intent(this, SugerenciasUserActivity::class.java))
+                }
+            }
+            R.id.itemSalir->{
+                finishAffinity()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

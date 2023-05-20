@@ -332,8 +332,8 @@ class AddComidaActivity : AppCompatActivity() {
     private fun agregarIngrediente(ingrediente: Ingrediente) {
         listaIngredientes.add(ingrediente)
         ingredientesAdapter.notifyItemInserted(listaIngredientes.size-1)
-        binding.scrollView.smoothScrollTo(0, binding.btAddIngredientesComida.top) //Scrolleamos hacia el botón
-        binding.rvIngredientesComida.scrollToPosition(listaIngredientes.size-1) //Bajamos el recycler
+        binding.rvIngredientesComida.smoothScrollToPosition(listaIngredientes.size-1) //Bajamos el recycler
+        binding.scrollView.smoothScrollTo(0, binding.btAddIngredientesComida.bottom) //Scrolleamos hacia el botón
         binding.tvSinIngredientes.isVisible=false
     }
 
@@ -353,6 +353,8 @@ class AddComidaActivity : AppCompatActivity() {
                     listaPasos.add(textoPaso)
                     pasosAdapter.notifyItemInserted(listaPasos.size-1)
                     binding.tvSinPasos.isGone=true
+                    binding.rvPasos.smoothScrollToPosition(listaPasos.size-1) //Bajamos el recycler
+                    //binding.scrollView.smoothScrollTo(0, binding.btVolverAddComida.bottom) //Scrolleamos hacia el botón
                     dialog.dismiss()
                 }
             }
@@ -363,8 +365,7 @@ class AddComidaActivity : AppCompatActivity() {
             setView(dialogLayout)
             show()
         }
-        binding.rvPasos.scrollToPosition(listaPasos.size-1) //Bajamos el recycler
-        binding.scrollView.smoothScrollTo(0, binding.btAdPasos.top) //Scrolleamos hacia el botón
+
     }
 
     //Elimina un paso del reycler y de la lista
@@ -378,7 +379,7 @@ class AddComidaActivity : AppCompatActivity() {
 
     private fun onPasoDelete(posicion: Int) {
         listaPasos.removeAt(posicion)
-        pasosAdapter.notifyItemRemoved(posicion)
+        pasosAdapter.notifyDataSetChanged()
         if(listaPasos.size==0){
             binding.tvSinPasos.isGone=false
         }
