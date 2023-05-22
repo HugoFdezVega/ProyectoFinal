@@ -132,7 +132,8 @@ class AddComidaActivity : AppCompatActivity() {
         binding.etTag2.isEnabled=true
         binding.etDescripcionComida.isEnabled=true
         binding.btAddIngredientesComida.isVisible=true
-        binding.btAdPasos.isVisible=true
+        //binding.btAdPasos.isVisible=true
+        binding.btAdPasos.isGone=false
         binding.btGuardarComida.isGone=false
         binding.btBorrarComida.isGone=false
         binding.ivComida.setOnClickListener {
@@ -177,83 +178,6 @@ class AddComidaActivity : AppCompatActivity() {
             }
         }
     }
-
-    /*
-    private fun crearComida() {
-        //Mediante estos métodos comprobamos que no haya errores en los elementos de los recyclers
-        if(obtenerCantidades() && obtenerPasos()){
-            //Comprobamos que la lista de ingredientes no esté vacía
-            if(listaIngredientes.isEmpty()){
-                Toast.makeText(this, "ERROR: La lista de ingredientes no puede estar vacía",Toast.LENGTH_LONG).show()
-            }
-            //Comprobamos que la lista de pasos no esté vacía
-            else if(listaPasos.isEmpty()){
-                Toast.makeText(this, "ERROR: La lista de pasos no puede estar vacía",Toast.LENGTH_LONG).show()
-            } else {
-                val tags= arrayListOf<String>()
-                tags.add(tag1)
-                tags.add(tag2)
-                // Si no tenemos datos de otra activity, es que estamos creando un nuevo ingrediente,
-                //por tanto, le asignamos la imagen a null provisionalmente. Si tenemos datos, es que
-                //estamos editando una comida y, por tanto, le asignamos la imagen que tenía ya.
-                if(datos==null){
-                    nuevaComida=Comida(nombre,descr,tags,"null",listaIngredientes,listaPasos)
-                } else {
-                    nuevaComida=Comida(nombre,descr,tags,comida.imagen,listaIngredientes,listaPasos)
-                }
-                //Creamos la nueva comida con la comida y la img que se haya seleccionado
-                vm.crearComida(nuevaComida!!,img)
-                Toast.makeText(this, "Comida creada correctamente", Toast.LENGTH_LONG).show()
-                finish()
-            }
-        }
-    }
-
-    // Este método va a recorrer todos los elementos del recycler de pasos, obteniendo el texto de su EditText.
-    //Después comprobará que no esté en blanco (de lo contrario, informa del error, retorna true y detiene la ejecución)
-    // y lo asignará a su posición correspondiente en la lista de pasos (donde todos estaban en blanco).
-    private fun obtenerPasos(): Boolean {
-        var obtenido=false
-        for(i in 0 until binding.rvPasos.childCount){
-            val view=binding.rvPasos.getChildAt(i)
-            val editText=view.findViewById<EditText>(R.id.etPaso)
-            val paso=editText.text.toString().trim()
-            if(paso.isBlank()){
-                editText.setError("Ningún paso en la lista puede estar vacío")
-                editText.requestFocus()
-                obtenido=false
-                break
-            } else {
-                listaPasos[i]=paso
-                obtenido=true
-            }
-        }
-        return obtenido
-    }
-
-    // Este método va a recorrer todos los elementos del recycler de ingredientes, obteniendo la cantidad de su EditText.
-    //Después comprobará que no esté en blanco (de lo contrario, informa del error, retorna true y detiene la ejecución)
-    // y lo asignará a la cantidad del ingrediente de su posición correspondiente en la lista de ingredientes.
-    private fun obtenerCantidades(): Boolean{
-        var obtenido=false
-        for(i in 0 until binding.rvIngredientesComida.childCount){
-            val view=binding.rvIngredientesComida.getChildAt(i)
-            val editText=view.findViewById<EditText>(R.id.etCantidadIngredienteAdd)
-            val cantidadStr=editText.text.toString().trim()
-            if(cantidadStr.isBlank()){
-                editText.setError("La cantidad de un ingrediente no puede estar vacía")
-                editText.requestFocus()
-                obtenido=false
-                break
-            } else {
-                val cantidad=cantidadStr.toDouble()
-                listaIngredientes[i].cantidad=cantidad
-                obtenido=true
-            }
-        }
-        return obtenido
-    }
-     */
 
     private fun crearComida() {
         val tags= arrayListOf<String>()
@@ -321,10 +245,21 @@ class AddComidaActivity : AppCompatActivity() {
         if(binding.etNombreComida.isEnabled){
             Toast.makeText(this,"Error: No se puede borrar una comida que aún no ha sido creada", Toast.LENGTH_LONG).show()
         } else {
-            val listaComidas=vm.getListaComidas()
-            val indice=listaComidas.indexOf(Comida(binding.etNombreComida.text.toString()))
-            val comidaParaBorrar=listaComidas[indice]
-            //vm.borrarComida(comidaParaBorrar)
+            val builder=AlertDialog.Builder(this)
+            builder.setTitle("Borrar comida")
+                .setMessage("¿Seguro que desea borrar esta comida?")
+                .setPositiveButton("Aceptar"){ dialog, wich->
+                    val listaComidas=vm.getListaComidas()
+                    val indice=listaComidas.indexOf(Comida(binding.etNombreComida.text.toString()))
+                    val comidaParaBorrar=listaComidas[indice]
+                    vm.borrarComida(comidaParaBorrar)
+                    finish()
+                }
+                .setNegativeButton("Cancelar") { dialog, wich->
+                    dialog.dismiss()
+                }
+                .setCancelable(true)
+                .show()
         }
     }
 

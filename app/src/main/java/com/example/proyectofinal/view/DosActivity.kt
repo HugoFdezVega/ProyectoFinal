@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.example.proyectofinal.R
 import com.example.proyectofinal.databinding.ActivityDosBinding
+import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,9 +34,19 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
         if(boton!=2){
             cargarFragment(fragments[boton] as Fragment)
         } else {
-            FirebaseAuth.getInstance().signOut()
-            vm.cerrarSesion()
-            startActivity(Intent(this, MainActivity::class.java))
+            val builder= AlertDialog.Builder(this)
+            builder.setTitle("Cerrar sesión")
+                .setMessage("¿Seguro que desea cerrar sesión?")
+                .setPositiveButton("Aceptar"){ dialog, wich->
+                    FirebaseAuth.getInstance().signOut()
+                    vm.cerrarSesion()
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
+                .setNegativeButton("Cancelar") { dialog, wich->
+                    dialog.dismiss()
+                }
+                .setCancelable(true)
+                .show()
         }
     }
 

@@ -47,21 +47,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
-                    android:text="Título:"
+                    android:text="Asunto:"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/etTituloSugsUser"
+                    app:layout_constraintStart_toStartOf="@+id/etAsuntoSugsUser"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/etTituloSugsUser"
+                    android:id="@+id/etAsuntoSugsUser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:layout_marginTop="5dp"
                     android:ems="10"
-                    android:hint="Inserte título..."
-                    android:inputType="textPersonName"
+                    android:hint="Inserte el asunto..."
+                    android:inputType="textPersonName|textCapSentences"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
@@ -73,21 +73,20 @@
                     android:text="Explica brevemente tu sugerencia:"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/etTituloSugsUser"
-                    app:layout_constraintTop_toBottomOf="@+id/etTituloSugsUser" />
+                    app:layout_constraintStart_toStartOf="@+id/etAsuntoSugsUser"
+                    app:layout_constraintTop_toBottomOf="@+id/etAsuntoSugsUser" />
 
                 <EditText
-                    android:id="@+id/etTextoSugsUser"
+                    android:id="@+id/etContenidoSugsUser"
                     android:layout_width="353dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:ems="10"
                     android:gravity="start|top"
                     android:hint="Inserte el texto..."
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:justificationMode="inter_word"
                     android:maxHeight="320dp"
-                    android:text="La vida es un viaje lleno de desafíos y sorpresas. Cada día nos enfrentamos a nuevas experiencias que nos moldean. A veces, el camino es difícil y nos pone a prueba. Pero descubrimos nuestra fortaleza y capacidad de superación. Tenemos sueños y metas por cumplir. La clave es perseverar y nunca rendirse. Cada paso nos acerca a nuestros objetivos. Es crucial rodearnos de personas inspiradoras que nos apoyen. El apoyo de seres queridos y una comunidad sólida impulsa nuestro crecimiento.ddddddddddddd "
                     app:layout_constraintStart_toStartOf="@+id/textView8"
                     app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
@@ -97,8 +96,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="0/500"
-                    app:layout_constraintStart_toStartOf="@+id/etTextoSugsUser"
-                    app:layout_constraintTop_toBottomOf="@+id/etTextoSugsUser" />
+                    app:layout_constraintStart_toStartOf="@+id/etContenidoSugsUser"
+                    app:layout_constraintTop_toBottomOf="@+id/etContenidoSugsUser" />
 
                 <Button
                     android:id="@+id/btVolverSugsUser"

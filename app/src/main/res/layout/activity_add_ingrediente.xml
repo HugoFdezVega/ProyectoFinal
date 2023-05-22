@@ -43,7 +43,7 @@
                 android:enabled="false"
                 android:gravity="start|top"
                 android:hint="Nombre"
-                android:inputType="textMultiLine"
+                android:inputType="textMultiLine|textCapSentences"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/ivIngrediente"

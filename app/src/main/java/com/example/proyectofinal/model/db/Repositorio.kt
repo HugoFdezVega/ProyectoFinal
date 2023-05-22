@@ -6,9 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
+import com.example.proyectofinal.model.Sugerencia
 import com.example.proyectofinal.model.storage.Prefs
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -112,9 +114,63 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
     }
 
     private fun guardarIngrediente(nuevoIngr: Ingrediente) {
+        val editando=listaIngredientes.contains(nuevoIngr)
         db.getReference("ingredientes").child(nuevoIngr.nombre!!).setValue(nuevoIngr).addOnSuccessListener {
             //Se ha guardado el ingrediente, así que lo filtramos
             filtrarIngr(nuevoIngr)
+            if(editando){
+                comprobarComidas(nuevoIngr)
+            }
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
+            }
+    }
+
+    fun borrarIngrediente(ingr: Ingrediente){
+        var comidasModificadas= mutableListOf<Comida>()
+        db.getReference("ingredientes/${ingr.nombre}").removeValue()
+        val storageRef=storage.getReference("ingredientes/${ingr.nombre}.png")
+        storageRef.delete().addOnSuccessListener {
+            //Se eliminó el ingrediente correctamente
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
+            }
+        ingrVeganos.remove(ingr)
+        ingrGlutenFree.remove(ingr)
+        ingrVeganosGlutenFree.remove(ingr)
+        for(c in listaComidas){
+            if(c.ingredientes!!.contains(ingr)){
+                c.ingredientes!!.remove(ingr)
+                comidasModificadas.add(c)
+            }
+        }
+        guardarMuchasComidas(comidasModificadas)
+    }
+
+    private fun comprobarComidas(nuevoIngr: Ingrediente) {
+        var comidasModificadas= mutableListOf<Comida>()
+        for(c in listaComidas){
+            if(c.ingredientes!!.contains(nuevoIngr)){
+                val index= c.ingredientes!!.indexOf(nuevoIngr)
+                c.ingredientes!![index]= Ingrediente(nuevoIngr)
+                comidasModificadas.add(c)
+            }
+        }
+        guardarMuchasComidas(comidasModificadas)
+    }
+
+    private fun guardarMuchasComidas(comidasModificadas: MutableList<Comida>) {
+        val batchUpdates=HashMap<String, Any>()
+        for(c in comidasModificadas){
+            batchUpdates["comidas/${c.nombre}"]=c
+        }
+        db.getReference().updateChildren(batchUpdates).addOnSuccessListener {
+            for(c in comidasModificadas){
+                filtrarComida(c)
+                comprobarMenu(c)
+            }
         }
             .addOnFailureListener {
                 println(it.message.toString())
@@ -133,10 +189,39 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         db.getReference("comidas").child(nuevaComida.nombre!!).setValue(nuevaComida).addOnSuccessListener {
             //Se ha guardado la comida, así que la filtramos
             filtrarComida(nuevaComida)
+            comprobarMenu(nuevaComida)
         }
             .addOnFailureListener {
                 println(it.message.toString())
             }
+    }
+
+    private fun comprobarMenu(nuevaComida: Comida) {
+        if(menuSemanal.contains(nuevaComida)){
+            val index=menuSemanal.indexOf(nuevaComida)
+            menuSemanal[index]=Comida(nuevaComida)
+            guardarMenu(menuSemanal)
+            ldListaMenu.value=menuSemanal
+        }
+    }
+
+    fun borrarComida(comida: Comida){
+        db.getReference("comidas/${comida.nombre}").removeValue()
+        val storageRef=storage.getReference("comidas/${comida.nombre}.png")
+        storageRef.delete().addOnSuccessListener {
+            //La imagen ha sido eliminada correctamente
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
+            }
+        comidasVeganas.remove(comida)
+        comidasGlutenFree.remove(comida)
+        comidasVeganasGlutenFree.remove(comida)
+        if(menuSemanal.contains(comida)){
+            menuSemanal.remove(comida)
+            guardarMenu(menuSemanal)
+            ldListaMenu.value=menuSemanal
+        }
     }
 
     private fun guardarImagenComida(nuevaComida: Comida, img: Uri) {
@@ -462,6 +547,42 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
         })
         return ldListaCompra
+    }
+
+    fun readSugerencias(): LiveData<MutableList<Sugerencia>>{
+        val ldListaSugerencias=MutableLiveData<MutableList<Sugerencia>>()
+        db.getReference("sugerencias").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var listaSugerencias= mutableListOf<Sugerencia>()
+                if(snapshot.exists()){
+                    for(item in snapshot.children){
+                        val sugerencia=item.getValue(Sugerencia::class.java)
+                        if(sugerencia!=null){
+                            listaSugerencias.add(sugerencia)
+                        }
+                    }
+                    listaSugerencias.sortBy { it.fecha }
+                    ldListaSugerencias.value=listaSugerencias
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        return ldListaSugerencias
+    }
+
+    fun guardarSugerencia(sugerencia: Sugerencia){
+        db.getReference("sugerencias").child("${sugerencia.fecha}").setValue(sugerencia).addOnSuccessListener {
+            //La sugerencia se ha guardado correctamente
+        }
+            .addOnFailureListener {
+                println(it.message.toString())
+            }
+    }
+
+    fun borrarSugerencia(sugerencia: Sugerencia){
+        db.getReference("sugerencias/${sugerencia.fecha}").removeValue()
     }
 
 

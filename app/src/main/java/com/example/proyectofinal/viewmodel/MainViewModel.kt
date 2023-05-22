@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
+import com.example.proyectofinal.model.Sugerencia
 import com.example.proyectofinal.model.db.Repositorio
 import com.example.proyectofinal.model.storage.Prefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -120,6 +121,22 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         }
     }
 
+    fun readListaCompra(): LiveData<String>{
+        var listaCompra=MutableLiveData<String>()
+        repo.readListaCompra().observeForever{
+            listaCompra.value=it
+        }
+        return listaCompra
+    }
+
+    fun readSugerencias(): LiveData<MutableList<Sugerencia>>{
+        var lista=MutableLiveData<MutableList<Sugerencia>>()
+        repo.readSugerencias().observeForever{
+            lista.value=it
+        }
+        return lista
+    }
+
     fun generarMenu(vegano: Boolean, glutenFree: Boolean){
         repo.generarMenu(vegano, glutenFree)
     }
@@ -140,13 +157,23 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
         repo.guardarListaCompra(listaCompra)
     }
 
-    fun readListaCompra(): LiveData<String>{
-        var listaCompra=MutableLiveData<String>()
-        repo.readListaCompra().observeForever{
-            listaCompra.value=it
-        }
-        return listaCompra
+    fun guardarSugerencia(sugerencia: Sugerencia){
+        repo.guardarSugerencia(sugerencia)
     }
+
+    fun borrarComida(comida: Comida){
+        repo.borrarComida(comida)
+    }
+
+    fun borrarIngrediente(ingr: Ingrediente){
+        repo.borrarIngrediente(ingr)
+    }
+
+    fun borrarSugerencia(sugerencia: Sugerencia){
+        repo.borrarSugerencia(sugerencia)
+    }
+
+
 
 
 

@@ -10,10 +10,12 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import com.example.proyectofinal.R
 import com.example.proyectofinal.databinding.ActivityAddComidaBinding
 import com.example.proyectofinal.databinding.ActivityAddIngredienteBinding
+import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
 import com.example.proyectofinal.viewmodel.MainViewModel
 import com.squareup.picasso.Picasso
@@ -35,8 +37,8 @@ class AddIngredienteActivity : AppCompatActivity() {
     private var datos: Bundle? =null
     private var img: Uri?=null
     private var nuevoIngr: Ingrediente?=null
+    private var ingrediente: Ingrediente?=null
 
-    lateinit var ingrediente: Ingrediente
     lateinit var binding: ActivityAddIngredienteBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,10 +62,39 @@ class AddIngredienteActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+        binding.btBorrarIngrediente.setOnClickListener {
+            borrarIngrediente()
+        }
         if(admin){
             binding.ivIngrediente.setOnClickListener {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
+        }
+    }
+
+    private fun borrarIngrediente() {
+        if(ingrediente==null){
+            Toast.makeText(this,"Error: No se puede borrar un ingrediente que aún no ha sido creado", Toast.LENGTH_LONG).show()
+        } else {
+            val builder= AlertDialog.Builder(this)
+            builder.setTitle("Borrar ingrediente")
+                .setMessage("¿Seguro que desea borrar este ingrediente?")
+                .setPositiveButton("Aceptar"){ dialog, wich->
+                    vm.borrarIngrediente(ingrediente!!)
+                    val i=Intent()
+                    i.apply {
+                        putExtra("retorno", ingrediente)
+                        putExtra("borrado", true)
+                    }
+                    setResult(RESULT_OK,i)
+                    Toast.makeText(this, "Ingrediente borrado correctamente", Toast.LENGTH_LONG).show()
+                    finish()
+                }
+                .setNegativeButton("Cancelar") { dialog, wich->
+                    dialog.dismiss()
+                }
+                .setCancelable(true)
+                .show()
         }
     }
 
@@ -74,12 +105,19 @@ class AddIngredienteActivity : AppCompatActivity() {
             //estamos editando un ingrediente así que lo creamos con todos sus datos y lo pasamos con img.
             if(datos==null){
                 nuevoIngr=Ingrediente(nombre,medida,"null",binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
+                Toast.makeText(this, "Ingrediente creado correctamente", Toast.LENGTH_LONG).show()
             } else {
-                nuevoIngr=Ingrediente(nombre,medida,ingrediente.imagen,binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
+                nuevoIngr=Ingrediente(nombre,medida, ingrediente!!.imagen,binding.cbVeganoAddIngrediente.isChecked,binding.cbGlutenFreeAddIngrediente.isChecked)
+                val i=Intent()
+                i.apply {
+                    putExtra("retorno", nuevoIngr)
+                    putExtra("borrado", false)
+                }
+                setResult(RESULT_OK,i)
+                Toast.makeText(this, "Ingrediente editado correctamente", Toast.LENGTH_LONG).show()
             }
             vm.crearIngrediente(nuevoIngr!!, img)
         }
-        Toast.makeText(this, "Ingrediente creado correctamente", Toast.LENGTH_LONG).show()
         finish()
     }
 
@@ -142,14 +180,14 @@ class AddIngredienteActivity : AppCompatActivity() {
         if(datos!=null){
             ingrediente=datos?.get("ingrediente") as Ingrediente
             //Pintamos los datos obtenidos
-            binding.etNombreIngrediente.setText(ingrediente.nombre)
-            binding.cbVeganoAddIngrediente.isChecked= ingrediente.vegano!!
-            binding.cbGlutenFreeAddIngrediente.isChecked=ingrediente.glutenFree!!
+            binding.etNombreIngrediente.setText(ingrediente!!.nombre)
+            binding.cbVeganoAddIngrediente.isChecked= ingrediente!!.vegano!!
+            binding.cbGlutenFreeAddIngrediente.isChecked= ingrediente!!.glutenFree!!
             var listaMedida=resources.getStringArray(R.array.Unidades)
-            var index=listaMedida.indexOf(ingrediente.medida)
+            var index=listaMedida.indexOf(ingrediente!!.medida)
             binding.spMedidaIngrediente.setSelection(index)
-            if(ingrediente.imagen!="null"){
-                Picasso.get().load(ingrediente.imagen).into(binding.ivIngrediente)
+            if(ingrediente!!.imagen!="null"){
+                Picasso.get().load(ingrediente!!.imagen).into(binding.ivIngrediente)
             } else {
                 Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/ingredientes%2Fingrediente.png?alt=media&token=698498aa-9d2a-49c4-940e-03f1578cec5f").into(binding.ivIngrediente)
             }

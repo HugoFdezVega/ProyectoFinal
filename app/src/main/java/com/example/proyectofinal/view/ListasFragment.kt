@@ -65,7 +65,14 @@ class ListasFragment : Fragment() {
         inicializar(view)
         setListeners()
         setRecyclers(view)
+    }
 
+    private fun comprobarAdmin() {
+        var admins=resources.getStringArray(R.array.admins)
+        if(admins.contains(vm.obtenerUsuario())){
+            admin=true
+            btAdd.isVisible=true
+        }
     }
 
     private fun observarComidas() {
@@ -150,7 +157,6 @@ class ListasFragment : Fragment() {
     }
 
     private fun onIngrDelete(it: Int) {
-        TODO("Not yet implemented")
     }
 
     private fun inicializar(view: View) {
@@ -163,6 +169,7 @@ class ListasFragment : Fragment() {
         rvListas=view.findViewById(R.id.rvListas)
         pbListas=view.findViewById(R.id.pbListas)
         tvTotal=view.findViewById(R.id.tvTotal)
+        comprobarAdmin()
     }
 
     private fun setListeners() {
