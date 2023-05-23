@@ -46,9 +46,11 @@ class AddComidaActivity : AppCompatActivity() {
         if(it.resultCode==RESULT_OK){
             val ingredienteRetorno=it.data?.getSerializableExtra("retorno") as Ingrediente
             val ingredienteBorrado=it.data?.getSerializableExtra("borrado") as Boolean
-            var indice=listaIngredientes.indexOf(ingredienteRetorno)
+            val indice=listaIngredientes.indexOf(ingredienteRetorno)
+            val cantidad=listaIngredientes[indice].cantidad
             listaIngredientes.removeAt(indice)
             if(!ingredienteBorrado){
+                ingredienteRetorno.cantidad=cantidad
                 listaIngredientes.add(indice,ingredienteRetorno)
                 ingredientesAdapter.lista=listaIngredientes
                 ingredientesAdapter.notifyItemChanged(indice)

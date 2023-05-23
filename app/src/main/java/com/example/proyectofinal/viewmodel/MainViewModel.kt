@@ -113,10 +113,10 @@ class MainViewModel @Inject constructor(private val repo: Repositorio, private v
     //Corrutina que observará los cambios en el LiveData del menú semanal y que ejecutará el método
     //para realizar una primera lectura
     fun readMenu(){
-        viewModelScope.launch {
             repo.ldListaMenu.observeForever { menuSemanal ->
                 ldListaMenu.value = menuSemanal
             }
+        viewModelScope.launch {
             repo.readMenu()
         }
     }

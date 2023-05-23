@@ -1,9 +1,13 @@
 package com.example.proyectofinal.view
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -38,6 +42,45 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         binding.btAddIngrediente.setOnClickListener {
             startActivity(Intent(this,AddIngredienteActivity::class.java))
         }
+        binding.svBuscarIngredientes.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                buscarEnLista(newText)
+                return true
+            }
+        })
+        /*
+        binding.svBuscarIngredientes.setOnCloseListener {
+            binding.svBuscarIngredientes.setQuery("",false)
+            binding.svBuscarIngredientes.clearFocus()
+            //al inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            //inputMethodManager.hideSoftInputFromWindow(binding.svBuscarIngredientes.windowToken, 0)
+            true
+        }
+         */
+    }
+
+    private fun buscarEnLista(query: String?) {
+        if(!query!!.isBlank()){
+            val listaFiltrada= mutableListOf<Ingrediente>()
+            val listaAFiltrar=lista
+            for (i in listaAFiltrar) {
+                if (i.nombre!!.lowercase().contains(query.lowercase())){
+                    listaFiltrada.add(i)
+                }
+            }
+            if(listaFiltrada.isEmpty()){
+                adapter.lista= mutableListOf()
+            } else {
+                adapter.lista=listaFiltrada
+            }
+            adapter.notifyDataSetChanged()
+        } else {
+            adapter.lista=lista
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun setRecycler() {
@@ -50,6 +93,7 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         vm.readIngredientes().observe(this, Observer{
             binding.pbSeleccionarIngr.isVisible=true
             adapter.lista=it
+            lista=it
             adapter.notifyDataSetChanged()
             binding.pbSeleccionarIngr.isVisible=false
         })

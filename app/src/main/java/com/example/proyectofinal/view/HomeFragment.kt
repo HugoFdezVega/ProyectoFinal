@@ -58,9 +58,9 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observarMenu()
         inicializar(view)
         setRecycler(view)
+        observarMenu()
         setListeners()
     }
 
@@ -161,7 +161,8 @@ class HomeFragment : Fragment() {
     //establecemos los controles en su estado inicial. De lo contrario, pintamos lo necesario,
     //asignamos el valor del LiveData a nuestra lista, se la pasamos al adapter y notificamos.
     private fun observarMenu() {
-        vm.ldListaMenu.observe(viewLifecycleOwner, Observer{
+        pbHome.isVisible=true
+        vm.ldListaMenu.observeForever{
             pbHome.isVisible=false
             if(it.size<5){
                 tvVacio.isGone=false
@@ -176,7 +177,7 @@ class HomeFragment : Fragment() {
                 adapter.notifyDataSetChanged()
                 obtenerRaciones()
             }
-        })
+        }
             vm.readMenu()
     }
 

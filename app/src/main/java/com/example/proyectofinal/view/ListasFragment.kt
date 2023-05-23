@@ -6,11 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.ProgressBar
-import android.widget.RadioButton
-import android.widget.SearchView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -28,9 +24,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ListasFragment : Fragment() {
     private val vm: MainViewModel by viewModels()
-    private val listaIngredientes= mutableListOf<Ingrediente>()
-    private val listaComidas= mutableListOf<Comida>()
-    private var admin=false
+    private val listaIngredientes = mutableListOf<Ingrediente>()
+    private val listaComidas = mutableListOf<Comida>()
+    private var admin = false
 
     lateinit var btAdd: FloatingActionButton
     lateinit var sbBusqueda: SearchView
@@ -68,63 +64,72 @@ class ListasFragment : Fragment() {
     }
 
     private fun comprobarAdmin() {
-        var admins=resources.getStringArray(R.array.admins)
-        if(admins.contains(vm.obtenerUsuario())){
-            admin=true
-            btAdd.isVisible=true
+        var admins = resources.getStringArray(R.array.admins)
+        if (admins.contains(vm.obtenerUsuario())) {
+            admin = true
+            btAdd.isVisible = true
         }
     }
 
     private fun observarComidas() {
         vm.readComidas().observe(viewLifecycleOwner, Observer {
-            pbListas.isVisible=false
+            pbListas.isVisible = false
             comprobarFiltros()
         })
     }
 
-    private fun observarIngredientes(){
+    private fun observarIngredientes() {
         vm.readIngredientes().observe(viewLifecycleOwner, Observer {
-            pbListas.isVisible=false
+            pbListas.isVisible = false
             comprobarFiltros()
         })
     }
 
     private fun comprobarFiltros() {
-        if(rbComidas.isChecked){
-            rvListas.adapter=adapterComidas
-            if(cbVegano.isChecked&&cbGlutenFree.isChecked){
-                adapterComidas.lista=vm.getComidasVeganasGlutenFree()
-            }
-            else if(cbVegano.isChecked){
-                adapterComidas.lista=vm.getComidasVeganas()
-            }
-            else if(cbGlutenFree.isChecked){
-                adapterComidas.lista=vm.getComidasGlutenFree()
+        if (rbComidas.isChecked) {
+            rvListas.adapter = adapterComidas
+            if (cbVegano.isChecked && cbGlutenFree.isChecked) {
+                adapterComidas.lista = vm.getComidasVeganasGlutenFree()
+            } else if (cbVegano.isChecked) {
+                adapterComidas.lista = vm.getComidasVeganas()
+            } else if (cbGlutenFree.isChecked) {
+                adapterComidas.lista = vm.getComidasGlutenFree()
             } else {
-                adapterComidas.lista=vm.getListaComidas()
+                adapterComidas.lista = vm.getListaComidas()
             }
-            tvTotal.text="Total comidas: ${adapterComidas.lista.size}"
+            tvTotal.text = "Total comidas: ${adapterComidas.lista.size}"
         } else {
-            rvListas.adapter=adapterIngredientes
-            if(cbVegano.isChecked&&cbGlutenFree.isChecked){
-                adapterIngredientes.lista=vm.getIngrVeganosGlutenFree()
-            }
-            else if(cbVegano.isChecked){
-                adapterIngredientes.lista=vm.getIngrVeganos()
-            }
-            else if(cbGlutenFree.isChecked){
-                adapterIngredientes.lista=vm.getIngrGlutenFree()
+            rvListas.adapter = adapterIngredientes
+            if (cbVegano.isChecked && cbGlutenFree.isChecked) {
+                adapterIngredientes.lista = vm.getIngrVeganosGlutenFree()
+            } else if (cbVegano.isChecked) {
+                adapterIngredientes.lista = vm.getIngrVeganos()
+            } else if (cbGlutenFree.isChecked) {
+                adapterIngredientes.lista = vm.getIngrGlutenFree()
             } else {
-                adapterIngredientes.lista=vm.getListaIngredientes()
+                adapterIngredientes.lista = vm.getListaIngredientes()
             }
-            tvTotal.text="Total ingredientes: ${adapterIngredientes.lista.size}"
+            tvTotal.text = "Total ingredientes: ${adapterIngredientes.lista.size}"
         }
     }
 
     private fun setRecyclers(view: View) {
-        rvListas.layoutManager=LinearLayoutManager(view.context)
-        adapterIngredientes= ListaIngredientesAdapter(listaIngredientes,"null",{onIngrDelete(it)},{onIngrUpdate(it)},admin,{onCantidadUpdate(it)})
-        adapterComidas= ListaComidasAdapter(listaComidas,"null",{onComidaDelete(it)},{onComidaUpdate(it)},{onComidaOtra(it)},{onComidaParecida(it)},{posicion, raciones -> onComidaRaciones(posicion, raciones)})
+        rvListas.layoutManager = LinearLayoutManager(view.context)
+        adapterIngredientes = ListaIngredientesAdapter(
+            listaIngredientes,
+            "null",
+            { onIngrDelete(it) },
+            { onIngrUpdate(it) },
+            admin,
+            { onCantidadUpdate(it) })
+        adapterComidas = ListaComidasAdapter(
+            listaComidas,
+            "null",
+            { onComidaDelete(it) },
+            { onComidaUpdate(it) },
+            { onComidaOtra(it) },
+            { onComidaParecida(it) },
+            { posicion, raciones -> onComidaRaciones(posicion, raciones) })
     }
 
     private fun onCantidadUpdate(it: Ingrediente) {
@@ -143,15 +148,15 @@ class ListasFragment : Fragment() {
     }
 
     private fun onComidaUpdate(comida: Comida) {
-        val intent=Intent(btAdd.context, AddComidaActivity::class.java).apply {
+        val intent = Intent(btAdd.context, AddComidaActivity::class.java).apply {
             putExtra("comida", comida)
         }
         startActivity(intent)
     }
 
     private fun onIngrUpdate(ingrediente: Ingrediente) {
-        val i=Intent(btAdd.context,AddIngredienteActivity::class.java).apply {
-            putExtra("ingrediente",ingrediente)
+        val i = Intent(btAdd.context, AddIngredienteActivity::class.java).apply {
+            putExtra("ingrediente", ingrediente)
         }
         startActivity(i)
     }
@@ -160,32 +165,32 @@ class ListasFragment : Fragment() {
     }
 
     private fun inicializar(view: View) {
-        btAdd=view.findViewById(R.id.btAddListas)
-        sbBusqueda=view.findViewById(R.id.sbListas)
-        cbVegano=view.findViewById(R.id.cbVeganoListas)
-        cbGlutenFree=view.findViewById(R.id.cbGlutenFreeListas)
-        rbComidas=view.findViewById(R.id.rbComidas)
-        rbIngredientes=view.findViewById(R.id.rbIngredientes)
-        rvListas=view.findViewById(R.id.rvListas)
-        pbListas=view.findViewById(R.id.pbListas)
-        tvTotal=view.findViewById(R.id.tvTotal)
+        btAdd = view.findViewById(R.id.btAddListas)
+        sbBusqueda = view.findViewById(R.id.sbListas)
+        cbVegano = view.findViewById(R.id.cbVeganoListas)
+        cbGlutenFree = view.findViewById(R.id.cbGlutenFreeListas)
+        rbComidas = view.findViewById(R.id.rbComidas)
+        rbIngredientes = view.findViewById(R.id.rbIngredientes)
+        rvListas = view.findViewById(R.id.rvListas)
+        pbListas = view.findViewById(R.id.pbListas)
+        tvTotal = view.findViewById(R.id.tvTotal)
         comprobarAdmin()
     }
 
     private fun setListeners() {
         btAdd.setOnClickListener {
-            if(rbComidas.isChecked){
-                startActivity(Intent(btAdd.context,AddComidaActivity::class.java))
+            if (rbComidas.isChecked) {
+                startActivity(Intent(btAdd.context, AddComidaActivity::class.java))
             } else {
-                startActivity(Intent(btAdd.context,AddIngredienteActivity::class.java))
+                startActivity(Intent(btAdd.context, AddIngredienteActivity::class.java))
             }
         }
-        sbBusqueda.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        sbBusqueda.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
             override fun onQueryTextChange(newText: String?): Boolean {
-                listaFiltrada(newText)
+                buscarEnLista(newText)
                 return true
             }
         })
@@ -195,11 +200,46 @@ class ListasFragment : Fragment() {
         rbIngredientes.setOnClickListener { comprobarFiltros() }
     }
 
-    private fun listaFiltrada(busqueda: String?) {
-        if(busqueda!=null){
-            val listaFiltrada=ArrayList<Comida>()
-            //TODO https://www.youtube.com/watch?v=SD097oVVrPE&ab_channel=CodingSTUFF min 13:00
+    private fun buscarEnLista(query: String?) {
+        if (!query!!.isBlank()) {
+            if (rbComidas.isChecked) {
+                comprobarFiltros()
+                var listaFiltrada = mutableListOf<Comida>()
+                val listaAFiltrar = adapterComidas.lista
+                for (i in listaAFiltrar) {
+                    if (i.nombre!!.lowercase().contains(query.lowercase())){
+                        listaFiltrada.add(i)
+                    }
+                }
+                if(listaFiltrada.isEmpty()){
+                    adapterComidas.lista= mutableListOf()
+                } else {
+                    adapterComidas.lista=listaFiltrada
+                }
+                adapterComidas.notifyDataSetChanged()
+                tvTotal.text = "Total comidas: ${adapterComidas.lista.size}"
+            } else {
+                comprobarFiltros()
+                var listaFiltrada = mutableListOf<Ingrediente>()
+                val listaAFiltrar = adapterIngredientes.lista
+                for (i in listaAFiltrar) {
+                    if (i.nombre!!.lowercase().contains(query.lowercase())){
+                        listaFiltrada.add(i)
+                    }
+                }
+                if(listaFiltrada.isEmpty()){
+                    adapterIngredientes.lista= mutableListOf()
+                } else {
+                    adapterIngredientes.lista=listaFiltrada
+                }
+                adapterIngredientes.notifyDataSetChanged()
+                tvTotal.text = "Total ingredientes: ${adapterIngredientes.lista.size}"
+            }
+        } else {
+            comprobarFiltros()
         }
     }
+
+
 
 }

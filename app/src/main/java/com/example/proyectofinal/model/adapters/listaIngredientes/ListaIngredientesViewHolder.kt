@@ -15,6 +15,7 @@ class ListaIngredientesViewHolder(v: View): RecyclerView.ViewHolder(v) {
             binding.etCantidadIngredienteAdd.isGone=false
             binding.tvUnidadIngredienteAdd.isGone=false
             binding.btSuprimirIngredienteAdd.isGone=false
+            binding.btCantidad.isGone=false
             binding.tvUnidadIngredienteAdd.text=ingrediente.medida
             binding.btSuprimirIngredienteAdd.setOnClickListener {
                 onItemDelete(adapterPosition)

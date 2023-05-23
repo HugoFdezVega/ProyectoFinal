@@ -154,7 +154,9 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         for(c in listaComidas){
             if(c.ingredientes!!.contains(nuevoIngr)){
                 val index= c.ingredientes!!.indexOf(nuevoIngr)
+                val cantidad=c.ingredientes!![index].cantidad
                 c.ingredientes!![index]= Ingrediente(nuevoIngr)
+                c.ingredientes!![index].cantidad=cantidad
                 comidasModificadas.add(c)
             }
         }
