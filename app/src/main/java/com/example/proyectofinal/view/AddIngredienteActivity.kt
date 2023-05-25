@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -69,7 +70,33 @@ class AddIngredienteActivity : AppCompatActivity() {
             binding.ivIngrediente.setOnClickListener {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
+            binding.ivIngrediente.setOnLongClickListener {
+                ampliarImagen()
+            }
+        } else {
+            binding.ivIngrediente.setOnClickListener {
+                ampliarImagen()
+            }
         }
+    }
+
+    private fun ampliarImagen():Boolean {
+        if(datos!=null){
+            val builder=AlertDialog.Builder(this)
+            val inflater=layoutInflater
+            val dialogLayout=inflater.inflate(R.layout.dialog_imagen,null)
+            val ivAmpliada=dialogLayout.findViewById<ImageView>(R.id.ivAmpliada)
+            Picasso.get().load(ingrediente!!.imagen).into(ivAmpliada)
+            with(builder){
+                setPositiveButton("Cerrar"){dialog, wich->
+                    dialog.dismiss()
+                }
+                setCancelable(true)
+                setView(dialogLayout)
+                show()
+            }
+        }
+        return true
     }
 
     private fun borrarIngrediente() {

@@ -1,12 +1,15 @@
 package com.example.proyectofinal.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -240,6 +243,10 @@ class ListasFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        sbBusqueda.clearFocus()
+    }
 
 
 }

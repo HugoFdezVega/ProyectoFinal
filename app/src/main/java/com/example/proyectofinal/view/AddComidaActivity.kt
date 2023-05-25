@@ -4,8 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
@@ -17,8 +17,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.proyectofinal.R
 import com.example.proyectofinal.databinding.ActivityAddComidaBinding
-import com.example.proyectofinal.databinding.DialogCantidadBinding
-import com.example.proyectofinal.databinding.DialogPasoBinding
 import com.example.proyectofinal.model.Comida
 import com.example.proyectofinal.model.Ingrediente
 import com.example.proyectofinal.model.adapters.listaIngredientes.ListaIngredientesAdapter
@@ -79,7 +77,7 @@ class AddComidaActivity : AppCompatActivity() {
     private var img: Uri?=null
     private var nuevaComida: Comida?=null
 
-    lateinit var comida: Comida
+    lateinit var comidaRecogida: Comida
     lateinit var pasosAdapter: ListaPasosAdapter
     lateinit var ingredientesAdapter: ListaIngredientesAdapter
     lateinit var binding: ActivityAddComidaBinding
@@ -100,18 +98,18 @@ class AddComidaActivity : AppCompatActivity() {
 
     private fun recogerDatos() {
         if(datos!=null){
-            comida=datos?.get("comida") as Comida
-            if(comida.imagen!="null"){
-                Picasso.get().load(comida.imagen).into(binding.ivComida)
+            comidaRecogida=datos?.get("comida") as Comida
+            if(comidaRecogida.imagen!="null"){
+                Picasso.get().load(comidaRecogida.imagen).into(binding.ivComida)
             } else {
                 Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/comidas%2Fcomida.png?alt=media&token=f677154c-3aa8-4f30-a320-4606ff385bcf").into(binding.ivComida)
             }
-            binding.etNombreComida.setText(comida.nombre)
-            binding.etTag1.setText(comida.tags!![0])
-            binding.etTag2.setText(comida.tags!![1])
-            binding.etDescripcionComida.setText(comida.descripcion)
-            listaIngredientes= comida.ingredientes!!
-            listaPasos= comida.preparacion!!
+            binding.etNombreComida.setText(comidaRecogida.nombre)
+            binding.etTag1.setText(comidaRecogida.tags!![0])
+            binding.etTag2.setText(comidaRecogida.tags!![1])
+            binding.etDescripcionComida.setText(comidaRecogida.descripcion)
+            listaIngredientes= comidaRecogida.ingredientes!!
+            listaPasos= comidaRecogida.preparacion!!
             ingredientesAdapter.lista=listaIngredientes
             ingredientesAdapter.notifyDataSetChanged()
             binding.tvSinIngredientes.isGone=true
@@ -138,14 +136,30 @@ class AddComidaActivity : AppCompatActivity() {
         binding.btAdPasos.isGone=false
         binding.btGuardarComida.isGone=false
         binding.btBorrarComida.isGone=false
-        binding.ivComida.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
         if(datos==null){
             binding.etNombreComida.isEnabled=true
         } else {
             binding.btGuardarComida.setText("Editar")
         }
+    }
+
+    private fun ampliarImagen():Boolean {
+        if(datos!=null){
+            val builder=AlertDialog.Builder(this)
+            val inflater=layoutInflater
+            val dialogLayout=inflater.inflate(R.layout.dialog_imagen,null)
+            val ivAmpliada=dialogLayout.findViewById<ImageView>(R.id.ivAmpliada)
+            Picasso.get().load(comidaRecogida.imagen).into(ivAmpliada)
+            with(builder){
+                setPositiveButton("Cerrar"){dialog, wich->
+                    dialog.dismiss()
+                }
+                setCancelable(true)
+                setView(dialogLayout)
+                show()
+            }
+        }
+        return true
     }
 
     private fun setRecyclers() {
@@ -179,6 +193,18 @@ class AddComidaActivity : AppCompatActivity() {
                 crearComida()
             }
         }
+        if(admin){
+            binding.ivComida.setOnClickListener {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+            binding.ivComida.setOnLongClickListener {
+                ampliarImagen()
+            }
+        } else {
+            binding.ivComida.setOnClickListener {
+                ampliarImagen()
+            }
+        }
     }
 
     private fun crearComida() {
@@ -191,7 +217,7 @@ class AddComidaActivity : AppCompatActivity() {
         if(datos==null){
             nuevaComida=Comida(nombre,descr,tags,"null",listaIngredientes,listaPasos)
         } else {
-            nuevaComida=Comida(nombre,descr,tags,comida.imagen,listaIngredientes,listaPasos)
+            nuevaComida=Comida(nombre,descr,tags,comidaRecogida.imagen,listaIngredientes,listaPasos)
         }
         //Creamos la nueva comida con la comida y la img que se haya seleccionado
         vm.crearComida(nuevaComida!!,img)
@@ -251,10 +277,7 @@ class AddComidaActivity : AppCompatActivity() {
             builder.setTitle("Borrar comida")
                 .setMessage("¿Seguro que desea borrar esta comida?")
                 .setPositiveButton("Aceptar"){ dialog, wich->
-                    val listaComidas=vm.getListaComidas()
-                    val indice=listaComidas.indexOf(Comida(binding.etNombreComida.text.toString()))
-                    val comidaParaBorrar=listaComidas[indice]
-                    vm.borrarComida(comidaParaBorrar)
+                    vm.borrarComida(comidaRecogida)
                     finish()
                 }
                 .setNegativeButton("Cancelar") { dialog, wich->

@@ -178,7 +178,13 @@ class HomeFragment : Fragment() {
                 obtenerRaciones()
             }
         }
+        if(vm.ldListaMenu.value.isNullOrEmpty()){
             vm.readMenu()
+        } else {
+            listaMenu= vm.ldListaMenu.value!!
+            adapter.lista=listaMenu
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun obtenerRaciones() {
