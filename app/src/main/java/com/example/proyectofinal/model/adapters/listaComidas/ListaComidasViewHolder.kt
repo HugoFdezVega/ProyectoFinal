@@ -38,11 +38,7 @@ class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
         binding.tvDescrComidaLista.text = comida.descripcion
         binding.tvNumRaciones.text=comida.raciones.toString()
         index=comida.raciones
-        if(comida.imagen!="null"){
-            Picasso.get().load(comida.imagen).into(binding.ivComidaLista)
-        } else {
-            Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/comidas%2Fcomida.png?alt=media&token=f677154c-3aa8-4f30-a320-4606ff385bcf").into(binding.ivComidaLista)
-        }
+        Picasso.get().load(comida.imagen).into(binding.ivComidaLista)
         binding.btOtra.setOnClickListener {
             onComidaOtra(adapterPosition)
         }

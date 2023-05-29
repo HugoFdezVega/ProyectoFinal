@@ -65,6 +65,7 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    private val SIN_FOTO="https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/comidas%2Fcomida.png?alt=media&token=f677154c-3aa8-4f30-a320-4606ff385bcf"
     private val vm: MainViewModel by viewModels()
     private var listaPasos= mutableListOf<String>()
     private var listaIngredientes= mutableListOf<Ingrediente>()
@@ -99,11 +100,7 @@ class AddComidaActivity : AppCompatActivity() {
     private fun recogerDatos() {
         if(datos!=null){
             comidaRecogida=datos?.get("comida") as Comida
-            if(comidaRecogida.imagen!="null"){
-                Picasso.get().load(comidaRecogida.imagen).into(binding.ivComida)
-            } else {
-                Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/randomeater-e0c93.appspot.com/o/comidas%2Fcomida.png?alt=media&token=f677154c-3aa8-4f30-a320-4606ff385bcf").into(binding.ivComida)
-            }
+            Picasso.get().load(comidaRecogida.imagen).into(binding.ivComida)
             binding.etNombreComida.setText(comidaRecogida.nombre)
             binding.etTag1.setText(comidaRecogida.tags!![0])
             binding.etTag2.setText(comidaRecogida.tags!![1])
@@ -215,7 +212,7 @@ class AddComidaActivity : AppCompatActivity() {
         //por tanto, le asignamos la imagen a null provisionalmente. Si tenemos datos, es que
         //estamos editando una comida y, por tanto, le asignamos la imagen que tenía ya.
         if(datos==null){
-            nuevaComida=Comida(nombre,descr,tags,"null",listaIngredientes,listaPasos)
+            nuevaComida=Comida(nombre,descr,tags,SIN_FOTO,listaIngredientes,listaPasos)
         } else {
             nuevaComida=Comida(nombre,descr,tags,comidaRecogida.imagen,listaIngredientes,listaPasos)
         }
