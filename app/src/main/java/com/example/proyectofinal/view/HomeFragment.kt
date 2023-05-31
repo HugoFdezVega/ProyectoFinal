@@ -24,6 +24,7 @@ import com.example.proyectofinal.model.Ingrediente
 import com.example.proyectofinal.model.adapters.listaComidas.ListaComidasAdapter
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.DecimalFormat
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -93,7 +94,7 @@ class HomeFragment : Fragment() {
     private fun generarListaCompra(ingredientesTotales: MutableList<Ingrediente>): String {
         var listaCompra=""
         for(i in ingredientesTotales){
-            listaCompra+="- ${i.nombre}: ${i.cantidad} ${i.medida}\n"
+            listaCompra+="- ${i.nombre}: ${DecimalFormat("#.#").format(i.cantidad)} ${i.medida}\n"
         }
         return listaCompra
     }
@@ -205,5 +206,8 @@ class HomeFragment : Fragment() {
         ivNotificacion=view.findViewById(R.id.ivNotificacion)
         tvVacio=view.findViewById(R.id.tvVacio)
     }
+
+
+
 
 }
