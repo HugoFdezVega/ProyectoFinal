@@ -2,6 +2,7 @@ package com.example.proyectofinal.view
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -206,7 +207,8 @@ class AddIngredienteActivity : AppCompatActivity() {
     private fun recogerDatos() {
         datos=intent.extras
         if(datos!=null) {
-            ingrediente = datos?.get("ingrediente") as Ingrediente
+            //ingrediente = datos?.get("ingrediente") as Ingrediente
+            ingrediente=getSerializable(intent,"ingrediente",Ingrediente::class.java)
             //Pintamos los datos obtenidos
             binding.etNombreIngrediente.setText(ingrediente!!.nombre)
             binding.cbVeganoAddIngrediente.isChecked = ingrediente!!.vegano!!
@@ -215,6 +217,14 @@ class AddIngredienteActivity : AppCompatActivity() {
             var index = listaMedida.indexOf(ingrediente!!.medida)
             binding.spMedidaIngrediente.setSelection(index)
             Picasso.get().load(ingrediente!!.imagen).into(binding.ivIngrediente)
+        }
+    }
+
+    private fun <T: java.io.Serializable?>getSerializable(intent: Intent, key: String, clase: Class<T>): T {
+        return if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU){
+            intent.getSerializableExtra(key,clase)!!
+        } else {
+            intent.getSerializableExtra(key) as T
         }
     }
 

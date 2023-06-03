@@ -42,6 +42,7 @@ class ListasFragment : Fragment() {
     lateinit var adapterComidas: ListaComidasAdapter
     lateinit var pbListas: ProgressBar
     lateinit var tvTotal: TextView
+    lateinit var btOcultar: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,6 +178,7 @@ class ListasFragment : Fragment() {
         rvListas = view.findViewById(R.id.rvListas)
         pbListas = view.findViewById(R.id.pbListas)
         tvTotal = view.findViewById(R.id.tvTotal)
+        btOcultar = view.findViewById(R.id.btOcultar)
         comprobarAdmin()
     }
 
@@ -197,10 +199,20 @@ class ListasFragment : Fragment() {
                 return true
             }
         })
+        btOcultar.setOnClickListener {
+            sbBusqueda.setQuery("",false)
+            it.ocultarTeclado()
+            sbBusqueda.clearFocus()
+        }
         cbVegano.setOnClickListener { comprobarFiltros() }
         cbGlutenFree.setOnClickListener { comprobarFiltros() }
         rbComidas.setOnClickListener { comprobarFiltros() }
         rbIngredientes.setOnClickListener { comprobarFiltros() }
+    }
+
+    private fun View.ocultarTeclado(){
+        val inputManager=context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(windowToken,0)
     }
 
     private fun buscarEnLista(query: String?) {

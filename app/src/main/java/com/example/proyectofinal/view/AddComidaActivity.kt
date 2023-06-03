@@ -218,7 +218,11 @@ class AddComidaActivity : AppCompatActivity() {
         }
         //Creamos la nueva comida con la comida y la img que se haya seleccionado
         vm.crearComida(nuevaComida!!,img)
-        Toast.makeText(this, "Comida creada correctamente", Toast.LENGTH_LONG).show()
+        if(datos==null){
+            Toast.makeText(this, "Comida creada correctamente", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this, "Comida editada correctamente", Toast.LENGTH_LONG).show()
+        }
         finish()
     }
 
@@ -310,7 +314,7 @@ class AddComidaActivity : AppCompatActivity() {
                     listaPasos.add(textoPaso)
                     pasosAdapter.notifyItemInserted(listaPasos.size-1)
                     binding.tvSinPasos.isGone=true
-                    binding.rvPasos.smoothScrollToPosition(listaPasos.size-1) //Bajamos el recycler
+                    binding.rvPasos.scrollToPosition(listaPasos.size-1) //Bajamos el recycler
                     //binding.scrollView.smoothScrollTo(0, binding.btVolverAddComida.bottom) //Scrolleamos hacia el botón
                     dialog.dismiss()
                 }

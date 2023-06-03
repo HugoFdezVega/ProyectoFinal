@@ -66,6 +66,9 @@ class SugerenciasUserActivity : AppCompatActivity() {
                 finish()
             }
         }
+        binding.btVolverSugsUser.setOnClickListener {
+            finish()
+        }
     }
 
     private fun existeError(): Boolean {

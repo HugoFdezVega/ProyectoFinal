@@ -179,7 +179,7 @@ class HomeFragment : Fragment() {
                 obtenerRaciones()
             }
         }
-        if(vm.ldListaMenu.value.isNullOrEmpty()){
+        if(listaMenu.isNullOrEmpty()){
             vm.readMenu()
         } else {
             listaMenu= vm.ldListaMenu.value!!
