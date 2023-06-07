@@ -141,20 +141,25 @@ class AddComidaActivity : AppCompatActivity() {
     }
 
     private fun ampliarImagen():Boolean {
-        if(datos!=null){
-            val builder=AlertDialog.Builder(this)
-            val inflater=layoutInflater
-            val dialogLayout=inflater.inflate(R.layout.dialog_imagen,null)
-            val ivAmpliada=dialogLayout.findViewById<ImageView>(R.id.ivAmpliada)
+        val builder=AlertDialog.Builder(this)
+        val inflater=layoutInflater
+        val dialogLayout=inflater.inflate(R.layout.dialog_imagen,null)
+        val ivAmpliada=dialogLayout.findViewById<ImageView>(R.id.ivAmpliada)
+        if(img!=null){
+            Picasso.get().load(img).into(ivAmpliada)
+        }
+        else if(datos!=null){
             Picasso.get().load(comidaRecogida.imagen).into(ivAmpliada)
-            with(builder){
-                setPositiveButton("Cerrar"){dialog, wich->
-                    dialog.dismiss()
-                }
-                setCancelable(true)
-                setView(dialogLayout)
-                show()
+        } else {
+            Picasso.get().load(SIN_FOTO).into(ivAmpliada)
+        }
+        with(builder){
+            setPositiveButton("Cerrar"){dialog, wich->
+                dialog.dismiss()
             }
+            setCancelable(true)
+            setView(dialogLayout)
+            show()
         }
         return true
     }
