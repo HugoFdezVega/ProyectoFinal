@@ -14,6 +14,11 @@ import com.example.proyectofinal.model.Sugerencia
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Sugerencias user activity
+ *
+ * @constructor Create empty Sugerencias user activity
+ */
 @AndroidEntryPoint
 class SugerenciasUserActivity : AppCompatActivity() {
     private val vm: MainViewModel by viewModels()
@@ -31,10 +36,21 @@ class SugerenciasUserActivity : AppCompatActivity() {
         setListeners()
     }
 
+    /**
+     * Inicializar
+     *
+     */
     private fun inicializar() {
         binding.tvEmailSugsUser.text=vm.obtenerUsuario()
     }
 
+    /**
+     * Set listeners
+     *
+     * Pone los listeners, entre ellos aquel que impide que se escriban mas de 500 caracteres y que
+     * cambia el color del contador en funcion de esta cantidad
+     *
+     */
     private fun setListeners() {
         binding.etContenidoSugsUser.filters= arrayOf(filtroCaracteres)
         binding.etContenidoSugsUser.addTextChangedListener(object : TextWatcher{
@@ -71,6 +87,11 @@ class SugerenciasUserActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Existe error
+     *
+     * @return
+     */
     private fun existeError(): Boolean {
         asunto=binding.etAsuntoSugsUser.text.toString().trim()
         contenido=binding.etContenidoSugsUser.text.toString().trim()

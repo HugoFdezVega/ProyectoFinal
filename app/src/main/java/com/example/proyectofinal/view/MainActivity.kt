@@ -18,6 +18,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Main activity
+ *
+ * @constructor Create empty Main activity
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     //Este responseLauncher será el que vuelva del intento de registro con google
@@ -56,17 +61,34 @@ class MainActivity : AppCompatActivity() {
         comprobarEmail()
     }
 
+    /**
+     * Inicializar listas
+     *
+     * Ejecuta los metodos para poner las listas en observacion, haciendo que se carguen antes
+     *
+     */
     private fun inicializarListas() {
         observarIngredientes()
         observarComidas()
     }
 
+    /**
+     * Comprobar email
+     *
+     * Comprueba las sharedPreferences para mandar a la pantalla principal si detecta que el usuario
+     * ya estaba logeado con anterioridad
+     *
+     */
     private fun comprobarEmail() {
         if (vm.obtenerUsuario() != null) {
             startActivity(Intent(this, DosActivity::class.java))
         }
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         binding.btRegistro.setOnClickListener {
             if (!existeError()) {
@@ -84,6 +106,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Entrar google
+     *
+     * Inicia sesion con google
+     *
+     */
     private fun entrarGoogle() {
         val googleConf= GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("441056481709-d2p0622m198o3goj2u09fv3duo7gndu0.apps.googleusercontent.com") //en el proyecto->app->google-services->oath_client
@@ -95,6 +123,12 @@ class MainActivity : AppCompatActivity() {
         responseLauncher.launch(googleClient.signInIntent)
     }
 
+    /**
+     * Entrar
+     *
+     * Inicia sesion con correo/contraseña
+     *
+     */
     private fun entrar() {
         vm.entrar(email,pass){
             if(it){
@@ -106,6 +140,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Registrar usuario
+     *
+     * Registra al usuario con correo/contraseña
+     *
+     */
     private fun registrarUsuario() {
         vm.registrarUsuario(email, pass) {
             if (it) {
@@ -117,6 +157,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Existe error
+     *
+     * Comprueba si existe algun error en correo/contraseña segun lo asignado
+     *
+     * @return
+     */
     private fun existeError(): Boolean {
         email = binding.etEmail.text.toString().trim()
         pass = binding.etPass.text.toString().trim()
@@ -144,6 +191,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
     }
+
     private fun observarComidas() {
         vm.readComidas().observe(this, Observer {
 

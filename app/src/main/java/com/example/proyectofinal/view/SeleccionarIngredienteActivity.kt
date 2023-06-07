@@ -23,6 +23,11 @@ import com.example.proyectofinal.model.adapters.seleccionarIngr.SeleccionarIngrA
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Seleccionar ingrediente activity
+ *
+ * @constructor Create empty Seleccionar ingrediente activity
+ */
 @AndroidEntryPoint
 class SeleccionarIngredienteActivity : AppCompatActivity() {
     private val vm: MainViewModel by viewModels()
@@ -39,6 +44,10 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         setListeners()
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         binding.btAddIngrediente.setOnClickListener {
             startActivity(Intent(this,AddIngredienteActivity::class.java))
@@ -59,11 +68,24 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Ocultar teclado
+     *
+     * Oculta el teclado si se pulsa en la equis de la barra de busqyeda
+     *
+     */
     private fun View.ocultarTeclado(){
         val inputManager=context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(windowToken,0)
     }
 
+    /**
+     * Buscar en lista
+     *
+     * Busca en la lista en funcion de las letras o restaura la lista si se borra todo
+     *
+     * @param query
+     */
     private fun buscarEnLista(query: String?) {
         if(!query!!.isBlank()){
             val listaFiltrada= mutableListOf<Ingrediente>()
@@ -85,12 +107,22 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Set recycler
+     *
+     */
     private fun setRecycler() {
         binding.rvSeleccionarIngredientes.layoutManager=GridLayoutManager(this,3)
         adapter= SeleccionarIngrAdapter(lista,{onItemSelected(it)})
         binding.rvSeleccionarIngredientes.adapter=adapter
     }
 
+    /**
+     * Observar ingredientes
+     *
+     * Observa y actualiza la lista de ingredientes en funcion de la BBDD
+     *
+     */
     private fun observarIngredientes() {
         vm.readIngredientes().observe(this, Observer{
             binding.pbSeleccionarIngr.isVisible=true
@@ -101,6 +133,14 @@ class SeleccionarIngredienteActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * On item selected
+     *
+     * Cuando se selecciona un ingrediente, no muestra un alertDialog para elegir su cantidad, crea
+     * el ingrediente y lo devuelve para añadirlo a la lista
+     *
+     * @param ingrediente
+     */
     private fun onItemSelected(ingrediente: Ingrediente) {
         var ingrSeleccionado=Ingrediente(ingrediente)
         val builder= AlertDialog.Builder(this)

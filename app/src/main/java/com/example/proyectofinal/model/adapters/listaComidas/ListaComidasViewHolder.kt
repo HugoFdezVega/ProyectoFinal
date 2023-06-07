@@ -8,11 +8,34 @@ import com.example.proyectofinal.databinding.CardComidaBinding
 import com.example.proyectofinal.model.Comida
 import com.squareup.picasso.Picasso
 
+/**
+ * Lista comidas view holder
+ *
+ * @constructor
+ *
+ * @param v
+ */
 class ListaComidasViewHolder(v: View):RecyclerView.ViewHolder(v) {
     private val binding=CardComidaBinding.bind(v)
     private val diasSemana= arrayListOf<String>("Lunes","Martes","Miércoles","Jueves","Viernes")
     private var index=0
 
+    /**
+     * Render
+     *
+     * @param comida
+     * @param actividad
+     * @param onItemDelete
+     * @param onItemUpdate
+     * @param onComidaOtra
+     * @param onComidaParecida
+     * @param onComidaRaciones
+     * @receiver
+     * @receiver
+     * @receiver
+     * @receiver
+     * @receiver
+     */
     fun render(
         comida: Comida,
         actividad: String,

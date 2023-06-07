@@ -26,6 +26,11 @@ import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.DecimalFormat
 
+/**
+ * Home fragment
+ *
+ * @constructor Create empty Home fragment
+ */
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private val vm: MainViewModel by viewModels()
@@ -65,6 +70,10 @@ class HomeFragment : Fragment() {
         setListeners()
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         btGenerarMenu.setOnClickListener {
             vm.generarMenu(cbVeganoMenu.isChecked,cbGlutenFreeMenu.isChecked)
@@ -79,6 +88,13 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Guardar lista compra
+     *
+     * Crea una copia del menu, le asigna sus raciones correspondientes y luego ejecuta los metodos
+     * para generar el String de la lista de la compra con todos los ingredientes y cantidades sumados
+     *
+     */
     private fun guardarListaCompra() {
         var copiaMenu= mutableListOf<Comida>()
         for(i in 0 until listaMenu.size){
@@ -91,6 +107,14 @@ class HomeFragment : Fragment() {
         vm.guardarListaCompra(listaCompra)
     }
 
+    /**
+     * Generar lista compra
+     *
+     * A partir de la lista que se le pasa, crea la lista en String con el formato deseado
+     *
+     * @param ingredientesTotales
+     * @return
+     */
     private fun generarListaCompra(ingredientesTotales: MutableList<Ingrediente>): String {
         var listaCompra=""
         for(i in ingredientesTotales){
@@ -99,6 +123,15 @@ class HomeFragment : Fragment() {
         return listaCompra
     }
 
+    /**
+     * Obtener ingredientes totales
+     *
+     * A partir del menu, lo va recorriendo y guardando los ingredientes en un array, sumando sus
+     * cantidades
+     *
+     * @param copiaMenu
+     * @return
+     */
     private fun obtenerIngredientesTotales(copiaMenu: MutableList<Comida>): MutableList<Ingrediente> {
         var ingredientesTotales= mutableListOf<Ingrediente>()
         for(c in copiaMenu){
@@ -118,6 +151,11 @@ class HomeFragment : Fragment() {
         return ingredientesTotales
     }
 
+    /**
+     * Set recycler
+     *
+     * @param view
+     */
     private fun setRecycler(view: View) {
         recMenu.layoutManager=LinearLayoutManager(view.context)
         adapter= ListaComidasAdapter(listaMenu,"menu",{onComidaDelete(it)},{onComidaUpdate(it)},{onComidaOtra(it)},{onComidaParecida(it)},{posicion, raciones -> onComidaRaciones(posicion, raciones)})
@@ -127,6 +165,13 @@ class HomeFragment : Fragment() {
     private fun onComidaDelete(posicion: Int) {
     }
 
+    /**
+     * On comida update
+     *
+     * Abre la vista detalled e una comida
+     *
+     * @param comida
+     */
     private fun onComidaUpdate(comida: Comida) {
         val intent=Intent(pbHome.context, AddComidaActivity::class.java).apply {
             putExtra("comida", comida)
@@ -134,13 +179,27 @@ class HomeFragment : Fragment() {
         startActivity(intent)
     }
 
+    /**
+     * On comida raciones
+     *
+     * Aumenta o disminuye las raciones de una comida en funcion del boton que se pulse
+     *
+     * @param posicion
+     * @param raciones
+     */
     private fun onComidaRaciones(posicion: Int, raciones: Int) {
         listaRaciones[posicion]=raciones
     }
 
-    // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la comida en función
-    //de dicha posición, la posición y si están o no pulsamos los checkboxes. La comida devuelta la
-    //ponemos en la posición que corresponde de nuestra lista, se la pasamos al adapter y notificamos.
+    /**
+     * On comida parecida
+     *
+     * // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la comida en función
+     * //de dicha posición, la posición y si están o no pulsamos los checkboxes. La comida devuelta la
+     * //ponemos en la posición que corresponde de nuestra lista, se la pasamos al adapter y notificamos.
+     *
+     * @param posicion
+     */
     private fun onComidaParecida(posicion: Int) {
         val comidaParecida=vm.comidaParecida(listaMenu[posicion],posicion,cbVeganoMenu.isChecked,cbGlutenFreeMenu.isChecked)
         listaMenu[posicion]=comidaParecida
@@ -148,9 +207,15 @@ class HomeFragment : Fragment() {
         adapter.notifyItemChanged(posicion)
     }
 
-    // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la posición y si
-    // están o no pulsamos los checkboxes. La comida devuelta la ponemos en la posición que corresponde
-    // de nuestra lista, se la pasamos al adapter y notificamos.
+    /**
+     * On comida otra
+     *
+     * // Recibimos la posición del adapter en que se ha pulsado el botón y mandamos la posición y si
+     * // están o no pulsamos los checkboxes. La comida devuelta la ponemos en la posición que corresponde
+     * // de nuestra lista, se la pasamos al adapter y notificamos.
+     *
+     * @param posicion
+     */
     private fun onComidaOtra(posicion: Int) {
         val otraComida=vm.otraComida(posicion, cbVeganoMenu.isChecked,cbGlutenFreeMenu.isChecked)
         listaMenu[posicion]=otraComida
@@ -158,9 +223,14 @@ class HomeFragment : Fragment() {
         adapter.notifyItemChanged(posicion)
     }
 
-    // Observamos el LiveData que se nos manda desde el repositorio. Si su tamaño es inferior a 5
-    //establecemos los controles en su estado inicial. De lo contrario, pintamos lo necesario,
-    //asignamos el valor del LiveData a nuestra lista, se la pasamos al adapter y notificamos.
+    /**
+     * Observar menu
+     *
+     * // Observamos el LiveData que se nos manda desde el repositorio. Si su tamaño es inferior a 5
+     * //establecemos los controles en su estado inicial. De lo contrario, pintamos lo necesario,
+     * //asignamos el valor del LiveData a nuestra lista, se la pasamos al adapter y notificamos.
+     *
+     */
     private fun observarMenu() {
         pbHome.isVisible=true
         vm.ldListaMenu.observeForever{
@@ -188,6 +258,10 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Obtener raciones
+     *
+     */
     private fun obtenerRaciones() {
         listaRaciones.clear()
         for(i in listaMenu){
@@ -195,6 +269,13 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Inicializar
+     *
+     * Inicializa todos los controles
+     *
+     * @param view
+     */
     private fun inicializar(view: View) {
         cbVeganoMenu=view.findViewById(R.id.cbVeganoMenu)
         cbGlutenFreeMenu=view.findViewById(R.id.cbGlutenFreeMenu)

@@ -14,6 +14,11 @@ import com.example.proyectofinal.databinding.ActivityListaCompraBinding
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Lista compra activity
+ *
+ * @constructor Create empty Lista compra activity
+ */
 @AndroidEntryPoint
 class ListaCompraActivity : AppCompatActivity() {
     private val vm: MainViewModel by viewModels()
@@ -27,6 +32,10 @@ class ListaCompraActivity : AppCompatActivity() {
         setListeners()
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         binding.btVolverListaCompra.setOnClickListener {
             finish()
@@ -36,6 +45,10 @@ class ListaCompraActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Copiar portapapeles
+     *
+     */
     private fun copiarPortapapeles() {
         val textoCopiar=binding.etListaCompra.text.toString()
         val clipboardManager=getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -44,6 +57,10 @@ class ListaCompraActivity : AppCompatActivity() {
         Toast.makeText(this, "Texto copiado en portapapeles", Toast.LENGTH_LONG).show()
     }
 
+    /**
+     * Observar lista compra
+     *
+     */
     private fun observarListaCompra() {
         vm.readListaCompra().observe(this, Observer {
             if(!it.isNullOrEmpty()){

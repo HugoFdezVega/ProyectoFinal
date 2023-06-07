@@ -16,6 +16,11 @@ import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Dos activity
+ *
+ * @constructor Create empty Dos activity
+ */
 @AndroidEntryPoint
 class DosActivity : AppCompatActivity(), InterfazMenuBar {
     private val fragments= arrayOf(HomeFragment(),ListasFragment())
@@ -30,6 +35,11 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
         comprobarAdmin()
     }
 
+    /**
+     * Boton pulsado
+     *
+     * @param boton
+     */
     override fun botonPulsado(boton: Int) {
         if(boton!=2){
             cargarFragment(fragments[boton] as Fragment)
@@ -50,6 +60,11 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
         }
     }
 
+    /**
+     * Cargar fragment
+     *
+     * @param fragment
+     */
     private fun cargarFragment(fragment: Fragment){
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -58,6 +73,10 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
         }
     }
 
+    /**
+     * Comprobar admin
+     *
+     */
     private fun comprobarAdmin() {
         var admins=resources.getStringArray(R.array.admins)
         if(admins.contains(vm.obtenerUsuario())){
@@ -65,11 +84,23 @@ class DosActivity : AppCompatActivity(), InterfazMenuBar {
         }
     }
 
+    /**
+     * On create options menu
+     *
+     * @param menu
+     * @return
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_opciones, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
+    /**
+     * On options item selected
+     *
+     * @param item
+     * @return
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.itemSugerencias->{

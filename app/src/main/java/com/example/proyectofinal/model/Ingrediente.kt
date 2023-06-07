@@ -1,5 +1,16 @@
 package com.example.proyectofinal.model
 
+/**
+ * Ingrediente
+ *
+ * @property nombre
+ * @property medida
+ * @property imagen
+ * @property vegano
+ * @property glutenFree
+ * @property cantidad
+ * @constructor Create empty Ingrediente
+ */
 class Ingrediente(
     var nombre: String?=null,
     var medida: String?=null,

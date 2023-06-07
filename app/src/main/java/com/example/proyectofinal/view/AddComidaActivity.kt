@@ -25,9 +25,18 @@ import com.example.proyectofinal.viewmodel.MainViewModel
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Add comida activity
+ *
+ * @constructor Create empty Add comida activity
+ */
 @AndroidEntryPoint
 class AddComidaActivity : AppCompatActivity() {
-    //Recoge el ingrediente que seleccionemos en la activity para seleccionar ingredientes
+    /**
+     * Response launcher select
+     *
+     * Recoge el ingrediente que seleccionemos en la activity para seleccionar ingredientes
+     */
     private val responseLauncherSelect=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.resultCode==RESULT_OK){
             val ingredienteSeleccionado=it.data?.getSerializableExtra("seleccionado") as Ingrediente
@@ -39,7 +48,11 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
-    //Recoge el ingrediente (y la posicion) del ingrediente que actualicemos/borremos al hacerle click
+    /**
+     * Response launcher update
+     *
+     * Recoge el ingrediente (y la posicion) del ingrediente que actualicemos/borremos al hacerle click
+     */
     private val responseLauncherUpdate=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.resultCode==RESULT_OK){
             val ingredienteRetorno=it.data?.getSerializableExtra("retorno") as Ingrediente
@@ -58,6 +71,11 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Pick media
+     *
+     * Recoge la imagen que selecciona el usuario
+     */
     private val pickMedia=registerForActivityResult(ActivityResultContracts.PickVisualMedia()){
         if(it!=null){
             binding.ivComida.setImageURI(it)
@@ -90,6 +108,12 @@ class AddComidaActivity : AppCompatActivity() {
         setListeners()
     }
 
+    /**
+     * Inicializar
+     *
+     * Comprueba si el usuario es admin, setea los recyclers y recoge los posibles datos
+     *
+     */
     private fun inicializar() {
         datos=intent.extras
         comprobarAdmin()
@@ -97,6 +121,13 @@ class AddComidaActivity : AppCompatActivity() {
         recogerDatos()
     }
 
+    /**
+     * Recoger datos
+     *
+     * Recogera los datos(es decir, comprobara si estamos editando una comida) y en funcion de que
+     * haya o no datos, los rellenara
+     *
+     */
     private fun recogerDatos() {
         if(datos!=null){
             comidaRecogida=datos?.get("comida") as Comida
@@ -116,6 +147,12 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Comprobar admin
+     *
+     * Comprueba si somos usuario administrador y en funcion de activara el modo admin
+     *
+     */
     private fun comprobarAdmin() {
         var admins=resources.getStringArray(R.array.admins)
         if(admins.contains(vm.obtenerUsuario())){
@@ -123,13 +160,18 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Modo admin
+     *
+     * Modo que muestra u oculta controles
+     *
+     */
     private fun modoAdmin() {
         admin=true
         binding.etTag1.isEnabled=true
         binding.etTag2.isEnabled=true
         binding.etDescripcionComida.isEnabled=true
         binding.btAddIngredientesComida.isVisible=true
-        //binding.btAdPasos.isVisible=true
         binding.btAdPasos.isGone=false
         binding.btGuardarComida.isGone=false
         binding.btBorrarComida.isGone=false
@@ -140,6 +182,13 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Ampliar imagen
+     *
+     * Muestra un alertDialog con una imagen ampliada
+     *
+     * @return
+     */
     private fun ampliarImagen():Boolean {
         val builder=AlertDialog.Builder(this)
         val inflater=layoutInflater
@@ -164,6 +213,10 @@ class AddComidaActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Set recyclers
+     *
+     */
     private fun setRecyclers() {
         //Recycler de los pasos
         binding.rvPasos.layoutManager=LinearLayoutManager(this)
@@ -175,8 +228,10 @@ class AddComidaActivity : AppCompatActivity() {
         binding.rvIngredientesComida.adapter=ingredientesAdapter
     }
 
-
-
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         binding.btAddIngredientesComida.setOnClickListener {
             responseLauncherSelect.launch(Intent(this,SeleccionarIngredienteActivity::class.java))
@@ -209,6 +264,14 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Crear comida
+     *
+     * Si no tenemos datos de otra activity, es que estamos creando un nuevo ingrediente,
+     * por tanto, le asignamos la imagen a null provisionalmente. Si tenemos datos, es que
+     * estamos editando una comida y, por tanto, le asignamos la imagen que tenía ya.
+     *
+     */
     private fun crearComida() {
         val tags= arrayListOf<String>()
         tags.add(tag1)
@@ -231,8 +294,14 @@ class AddComidaActivity : AppCompatActivity() {
         finish()
     }
 
-    // Este método comprueba que no haya errores en ninguno de los campos y que no se repita el nombre
-    //de la comida si no estamos editando (es decir, si no hemos recogido ninguna comida al entrar).
+    /**
+     * Existe error
+     *
+     * Este método comprueba que no haya errores en ninguno de los campos y que no se repita el nombre
+     * de la comida si no estamos editando (es decir, si no hemos recogido ninguna comida al entrar).
+     *
+     * @return
+     */
     private fun existeError(): Boolean {
         nombre=binding.etNombreComida.text.toString().trim()
         tag1=binding.etTag1.text.toString().trim()
@@ -275,6 +344,13 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Borrar comida
+     *
+     * Borra la comida de la base de datos tras una confirmacion alertDialog mediante tras comprobar
+     * que la comida este creada previamente en BBDD
+     *
+     */
     private fun borrarComida() {
         if(binding.etNombreComida.isEnabled){
             Toast.makeText(this,"Error: No se puede borrar una comida que aún no ha sido creada", Toast.LENGTH_LONG).show()
@@ -294,7 +370,13 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
-    //Método que agrega el ingrediente del parámetro a la lista y notifica al recycler
+    /**
+     * Agregar ingrediente
+     *
+     * Nos lleva al activity para que seleccionemos el ingrediente
+     *
+     * @param ingrediente
+     */
     private fun agregarIngrediente(ingrediente: Ingrediente) {
         listaIngredientes.add(ingrediente)
         ingredientesAdapter.notifyItemInserted(listaIngredientes.size-1)
@@ -303,7 +385,12 @@ class AddComidaActivity : AppCompatActivity() {
         binding.tvSinIngredientes.isVisible=false
     }
 
-    //Método que agrega un paso al recycler y a la lista
+    /**
+     * Agregar paso
+     *
+     * Nos abre el alertDialog para introducir el texto del paso de la receta
+     *
+     */
     private fun agregarPaso() {
         val builder = AlertDialog.Builder(this)
         val inflater=layoutInflater
@@ -334,7 +421,13 @@ class AddComidaActivity : AppCompatActivity() {
 
     }
 
-    //Elimina un paso del reycler y de la lista
+    /**
+     * On ingr delete
+     *
+     * Borra el ingrediente indicado de la lista de ingredientes
+     *
+     * @param posicion
+     */
     private fun onIngrDelete(posicion: Int){
         listaIngredientes.removeAt(posicion)
         ingredientesAdapter.notifyItemRemoved(posicion)
@@ -343,6 +436,13 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * On paso delete
+     *
+     * Borra el paso indicado de la lista de pasos
+     *
+     * @param posicion
+     */
     private fun onPasoDelete(posicion: Int) {
         listaPasos.removeAt(posicion)
         pasosAdapter.notifyDataSetChanged()
@@ -351,7 +451,13 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * On ingr update
+     *
+     * Abre la vista detalle del ingrediente para poder modificarla
+     *
+     * @param ingrediente
+     */
     private fun onIngrUpdate(ingrediente: Ingrediente){
         val i=Intent(this,AddIngredienteActivity::class.java).apply {
             putExtra("ingrediente",ingrediente)
@@ -359,6 +465,13 @@ class AddComidaActivity : AppCompatActivity() {
         responseLauncherUpdate.launch(i)
     }
 
+    /**
+     * On cantidad update
+     *
+     * Abre el alertDialog de la cantidad para que podamos editarla
+     *
+     * @param ingr
+     */
     private fun onCantidadUpdate(ingr: Ingrediente) {
         val builder=AlertDialog.Builder(this)
         val inflater=layoutInflater
@@ -397,6 +510,13 @@ class AddComidaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * On paso update
+     *
+     * Abre el alertDialog del texto del paso para que podamos editarlo
+     *
+     * @param oldPaso
+     */
     private fun onPasoUpdate(oldPaso: String) {
         val builder = AlertDialog.Builder(this)
         val inflater=layoutInflater

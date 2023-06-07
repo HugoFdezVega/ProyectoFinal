@@ -24,6 +24,11 @@ import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Listas fragment
+ *
+ * @constructor Create empty Listas fragment
+ */
 @AndroidEntryPoint
 class ListasFragment : Fragment() {
     private val vm: MainViewModel by viewModels()
@@ -67,6 +72,10 @@ class ListasFragment : Fragment() {
         setRecyclers(view)
     }
 
+    /**
+     * Comprobar admin
+     *
+     */
     private fun comprobarAdmin() {
         var admins = resources.getStringArray(R.array.admins)
         if (admins.contains(vm.obtenerUsuario())) {
@@ -75,6 +84,10 @@ class ListasFragment : Fragment() {
         }
     }
 
+    /**
+     * Observar comidas
+     *
+     */
     private fun observarComidas() {
         vm.readComidas().observe(viewLifecycleOwner, Observer {
             pbListas.isVisible = false
@@ -82,6 +95,10 @@ class ListasFragment : Fragment() {
         })
     }
 
+    /**
+     * Observar ingredientes
+     *
+     */
     private fun observarIngredientes() {
         vm.readIngredientes().observe(viewLifecycleOwner, Observer {
             pbListas.isVisible = false
@@ -89,6 +106,12 @@ class ListasFragment : Fragment() {
         })
     }
 
+    /**
+     * Comprobar filtros
+     *
+     * Comprobara los filtros que estan seleccionados y asignara una lista al recycler en funcion de ello
+     *
+     */
     private fun comprobarFiltros() {
         if (rbComidas.isChecked) {
             rvListas.adapter = adapterComidas
@@ -117,6 +140,11 @@ class ListasFragment : Fragment() {
         }
     }
 
+    /**
+     * Set recyclers
+     *
+     * @param view
+     */
     private fun setRecyclers(view: View) {
         rvListas.layoutManager = LinearLayoutManager(view.context)
         adapterIngredientes = ListaIngredientesAdapter(
@@ -151,6 +179,13 @@ class ListasFragment : Fragment() {
     private fun onComidaDelete(it: Int) {
     }
 
+    /**
+     * On comida update
+     *
+     * Abre la vista detalle de las comidas
+     *
+     * @param comida
+     */
     private fun onComidaUpdate(comida: Comida) {
         val intent = Intent(btAdd.context, AddComidaActivity::class.java).apply {
             putExtra("comida", comida)
@@ -158,6 +193,13 @@ class ListasFragment : Fragment() {
         startActivity(intent)
     }
 
+    /**
+     * On ingr update
+     *
+     * Abre la vista detalle de los ingredientes
+     *
+     * @param ingrediente
+     */
     private fun onIngrUpdate(ingrediente: Ingrediente) {
         val i = Intent(btAdd.context, AddIngredienteActivity::class.java).apply {
             putExtra("ingrediente", ingrediente)
@@ -168,6 +210,13 @@ class ListasFragment : Fragment() {
     private fun onIngrDelete(it: Int) {
     }
 
+    /**
+     * Inicializar
+     *
+     * Inicializa todos los controles
+     *
+     * @param view
+     */
     private fun inicializar(view: View) {
         btAdd = view.findViewById(R.id.btAddListas)
         sbBusqueda = view.findViewById(R.id.sbListas)
@@ -182,6 +231,10 @@ class ListasFragment : Fragment() {
         comprobarAdmin()
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         btAdd.setOnClickListener {
             if (rbComidas.isChecked) {
@@ -210,11 +263,23 @@ class ListasFragment : Fragment() {
         rbIngredientes.setOnClickListener { comprobarFiltros() }
     }
 
+    /**
+     * Ocultar teclado
+     *
+     */
     private fun View.ocultarTeclado(){
         val inputManager=context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(windowToken,0)
     }
 
+    /**
+     * Buscar en lista
+     *
+     * Metodo para buscar en las listas, filtandolas segun letras o reasignando la lista inicial de
+     * borrarse todo
+     *
+     * @param query
+     */
     private fun buscarEnLista(query: String?) {
         if (!query!!.isBlank()) {
             if (rbComidas.isChecked) {

@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/itemSugerencias"
-        android:title="Sugerencias" />
+        android:title="Contacto" />
     <item
         android:id="@+id/itemSalir"
         android:title="Salir" />

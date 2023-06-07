@@ -1,5 +1,17 @@
 package com.example.proyectofinal.model
 
+/**
+ * Comida
+ *
+ * @property nombre
+ * @property descripcion
+ * @property tags
+ * @property imagen
+ * @property ingredientes
+ * @property preparacion
+ * @property raciones
+ * @constructor Create empty Comida
+ */
 data class Comida(
     var nombre: String?=null,
     var descripcion: String?=null,

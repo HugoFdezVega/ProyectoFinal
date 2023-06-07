@@ -23,6 +23,11 @@ import com.example.proyectofinal.viewmodel.MainViewModel
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Add ingrediente activity
+ *
+ * @constructor Create empty Add ingrediente activity
+ */
 @AndroidEntryPoint
 class AddIngredienteActivity : AppCompatActivity() {
     private val pickMedia=registerForActivityResult(ActivityResultContracts.PickVisualMedia()){
@@ -51,6 +56,10 @@ class AddIngredienteActivity : AppCompatActivity() {
         setListeners()
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         binding.btVolverAddIngrediente.setOnClickListener {
             finish()
@@ -82,6 +91,11 @@ class AddIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Ampliar imagen
+     *
+     * @return
+     */
     private fun ampliarImagen():Boolean {
         val builder=AlertDialog.Builder(this)
         val inflater=layoutInflater
@@ -106,6 +120,10 @@ class AddIngredienteActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Borrar ingrediente
+     *
+     */
     private fun borrarIngrediente() {
         if(ingrediente==null){
             Toast.makeText(this,"Error: No se puede borrar un ingrediente que aún no ha sido creado", Toast.LENGTH_LONG).show()
@@ -132,6 +150,10 @@ class AddIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Guardar ingrediente
+     *
+     */
     private fun guardarIngrediente() {
         if(!existeError()){
             // Si no hemos recogido datos, es un ingrediente nuevo, así que lo creamos pasándole null
@@ -155,6 +177,11 @@ class AddIngredienteActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Existe error
+     *
+     * @return
+     */
     private fun existeError(): Boolean {
         nombre=binding.etNombreIngrediente.text.toString().trim()
         if(nombre.isBlank()){
@@ -176,11 +203,19 @@ class AddIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Inicializar
+     *
+     */
     private fun inicializar() {
         recogerDatos()
         comprobarAdmin()
     }
 
+    /**
+     * Comprobar admin
+     *
+     */
     private fun comprobarAdmin() {
         // Cogemos el array de admins y comprobamos si el correod el usuario actual está en dicho
         //array. De ser así, es un admin y activamos el modo admin
@@ -192,6 +227,10 @@ class AddIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Modo admin
+     *
+     */
     private fun modoAdmin() {
         // Podemos la bandera de admin a true y activamos los controles para el administrador. Si no
         //hemos recogido datos, significa que estamos creando así que permitidos editar el editText
@@ -209,6 +248,10 @@ class AddIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Recoger datos
+     *
+     */
     private fun recogerDatos() {
         datos=intent.extras
         if(datos!=null) {
@@ -225,6 +268,15 @@ class AddIngredienteActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Get serializable
+     *
+     * @param T
+     * @param intent
+     * @param key
+     * @param clase
+     * @return
+     */
     private fun <T: java.io.Serializable?>getSerializable(intent: Intent, key: String, clase: Class<T>): T {
         return if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU){
             intent.getSerializableExtra(key,clase)!!

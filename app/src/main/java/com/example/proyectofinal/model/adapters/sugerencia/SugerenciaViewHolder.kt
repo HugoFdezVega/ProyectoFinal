@@ -7,9 +7,23 @@ import com.example.proyectofinal.model.Sugerencia
 import java.text.SimpleDateFormat
 import java.util.Date
 
+/**
+ * Sugerencia view holder
+ *
+ * @constructor
+ *
+ * @param v
+ */
 class SugerenciaViewHolder(v: View): RecyclerView.ViewHolder(v) {
     val binding=CardSugerenciasBinding.bind(v)
 
+    /**
+     * Render
+     *
+     * @param sugerencia
+     * @param onItemDelete
+     * @receiver
+     */
     fun render(sugerencia: Sugerencia, onItemDelete: (Sugerencia)->Unit){
         binding.tvPeticionarioSug.text=sugerencia.peticionario
         binding.tvAsuntoSug.text=sugerencia.asunto

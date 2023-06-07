@@ -19,6 +19,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 
+/**
+ * Repositorio
+ *
+ * @property prefs
+ * @constructor Create empty Repositorio
+ */
 @Singleton
 class Repositorio @Inject constructor(private val prefs: Prefs) {
     private val db= FirebaseDatabase.getInstance("https://randomeater-e0c93-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -35,58 +41,138 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
     private var listaCompra= mutableListOf<String>()
     var ldListaMenu=MutableLiveData<MutableList<Comida>>()
 
+    /**
+     * Registrar usuario
+     *
+     * @param email
+     * @param pass
+     * @param callback
+     * @receiver
+     */
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
             callback(it.isSuccessful)
         }
     }
 
+    /**
+     * Entrar
+     *
+     * @param email
+     * @param pass
+     * @param callback
+     * @receiver
+     */
     fun entrar(email: String, pass: String, callback: (Boolean) -> Unit){
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,pass).addOnCompleteListener {
             callback(it.isSuccessful)
         }
     }
 
+    /**
+     * Usuario formateado
+     *
+     * Devuelve el usuario a partir e su correo con el formato adecuado
+     *
+     * @return
+     */
     fun usuarioFormateado(): String{
         return prefs.getUser()!!.replace(".","*")
     }
 
+    /**
+     * Usuario desformateado
+     *
+     * A partir del usuario formateado, devuelve su correo
+     *
+     * @param userFormateado
+     * @return
+     */
     fun usuarioDesformateado(userFormateado: String): String{
         return userFormateado.replace("*",".")
     }
 
+    /**
+     * Get lista ingredientes
+     *
+     * @return
+     */
     fun getListaIngredientes(): MutableList<Ingrediente>{
         return listaIngredientes
     }
 
+    /**
+     * Get lista comidas
+     *
+     * @return
+     */
     fun getListaComidas(): MutableList<Comida>{
         return listaComidas
     }
 
+    /**
+     * Get comidas veganas
+     *
+     * @return
+     */
     fun getComidasVeganas(): MutableList<Comida>{
         return comidasVeganas
     }
 
+    /**
+     * Get comidas gluten free
+     *
+     * @return
+     */
     fun getComidasGlutenFree(): MutableList<Comida>{
         return comidasGlutenFree
     }
 
+    /**
+     * Get comidas veganas y gluten free
+     *
+     * @return
+     */
     fun getComidasVeganasGlutenFree(): MutableList<Comida>{
         return comidasVeganasGlutenFree
     }
 
+    /**
+     * Get ingr veganos
+     *
+     * @return
+     */
     fun getIngrVeganos(): MutableList<Ingrediente>{
         return ingrVeganos
     }
 
+    /**
+     * Get ingr gluten free
+     *
+     * @return
+     */
     fun getIngrGlutenFree(): MutableList<Ingrediente>{
         return ingrGlutenFree
     }
 
+    /**
+     * Get ingr veganos gluten free
+     *
+     * @return
+     */
     fun getIngrVeganosGlutenFree(): MutableList<Ingrediente>{
         return ingrVeganosGlutenFree
     }
 
+    /**
+     * Crear ingrediente
+     *
+     * Comprueba si la imagen es nula. Si es así, la guarda y crea el ingrediente. Si no,
+     * crea el ingrediente directamente
+     *
+     * @param nuevoIngr
+     * @param img
+     */
     fun crearIngrediente(nuevoIngr: Ingrediente, img: Uri?) {
         if(img!=null){
             guardarImagenIngr(nuevoIngr, img)
@@ -95,6 +181,15 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    /**
+     * Guardar imagen ingr
+     *
+     * Guarda la imagen del ingrediente en el Storage y luego la descarga para obtener su URI. Despues
+     * guarda el ingrediente con la URI como parámetro de la imagen
+     *
+     * @param nuevoIngr
+     * @param img
+     */
     private fun guardarImagenIngr(nuevoIngr: Ingrediente, img: Uri?) {
         val imagen=storage.reference.child("ingredientes/${nuevoIngr.nombre}.png")
         val upload=imagen.putFile(img!!).addOnSuccessListener {
@@ -113,6 +208,13 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Guardar ingrediente
+     *
+     * Guarda el ingrediente en la base de datos
+     *
+     * @param nuevoIngr
+     */
     private fun guardarIngrediente(nuevoIngr: Ingrediente) {
         val editando=listaIngredientes.contains(nuevoIngr)
         db.getReference("ingredientes").child(nuevoIngr.nombre!!).setValue(nuevoIngr).addOnSuccessListener {
@@ -127,6 +229,14 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Borrar ingrediente
+     *
+     * Borra el ingrediente de base de datos y su imagen del Storage. Después se encarga de borrar
+     * dicho ingrediente de todas las comidas que lo contuvieran
+     *
+     * @param ingr
+     */
     fun borrarIngrediente(ingr: Ingrediente){
         var comidasModificadas= mutableListOf<Comida>()
         db.getReference("ingredientes/${ingr.nombre}").removeValue()
@@ -149,6 +259,15 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         guardarMuchasComidas(comidasModificadas)
     }
 
+    /**
+     * Comprobar comidas
+     *
+     * Se encarga de recorrer todas las comidas, comprobando si poseen o no el ingrediente del
+     * param. Si es así, guarda la cantidad del ingrediente y lo pisa, reasignando
+     * la cantidad previa. Se utiliza al actualizar un ingrediente
+     *
+     * @param nuevoIngr
+     */
     private fun comprobarComidas(nuevoIngr: Ingrediente) {
         var comidasModificadas= mutableListOf<Comida>()
         for(c in listaComidas){
@@ -163,6 +282,14 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         guardarMuchasComidas(comidasModificadas)
     }
 
+    /**
+     * Guardar muchas comidas
+     *
+     * Guarda un array de comidas de golpe mediante HashMap para evitar elicitar muchas veces el
+     * listener de la base de datos y así preservar la integridad de las listas
+     *
+     * @param comidasModificadas
+     */
     private fun guardarMuchasComidas(comidasModificadas: MutableList<Comida>) {
         val batchUpdates=HashMap<String, Any>()
         for(c in comidasModificadas){
@@ -179,6 +306,15 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Crear comida
+     *
+     * Comprueba si la imagen es nula. Si es así, la guarda y crea la comida. Si no,
+     * crea la comida directamente
+     *
+     * @param nuevaComida
+     * @param img
+     */
     fun crearComida(nuevaComida: Comida, img: Uri?){
         if(img!=null){
             guardarImagenComida(nuevaComida, img)
@@ -187,6 +323,13 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    /**
+     * Guardar comida
+     *
+     * Guarda la comida en la base de datos
+     *
+     * @param nuevaComida
+     */
     private fun guardarComida(nuevaComida: Comida) {
         db.getReference("comidas").child(nuevaComida.nombre!!).setValue(nuevaComida).addOnSuccessListener {
             //Se ha guardado la comida, así que la filtramos
@@ -198,6 +341,14 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Comprobar menu
+     *
+     * Comprueba si la comida del param esta en el menu y si es asi la pisa y actualiza el LiveData.
+     * Se usa al editar comidas.
+     *
+     * @param nuevaComida
+     */
     private fun comprobarMenu(nuevaComida: Comida) {
         if(menuSemanal.contains(nuevaComida)){
             val index=menuSemanal.indexOf(nuevaComida)
@@ -207,6 +358,13 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    /**
+     * Borrar comida
+     *
+     * Borra una comida de la base de datos y del menu si existiera, y su imagen del Storage
+     *
+     * @param comida
+     */
     fun borrarComida(comida: Comida){
         db.getReference("comidas/${comida.nombre}").removeValue()
         val storageRef=storage.getReference("comidas/${comida.nombre}.png")
@@ -226,6 +384,15 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    /**
+     * Guardar imagen comida
+     *
+     * Guarda la imagen de la comida en el Storage y luego la descarga para obtener su URI. Despues
+     * guarda la comida con la URI como parámetro de la imagen
+     *
+     * @param nuevaComida
+     * @param img
+     */
     private fun guardarImagenComida(nuevaComida: Comida, img: Uri) {
         val imagen=storage.reference.child("comidas/${nuevaComida.nombre}.png")
         val upload=imagen.putFile(img!!).addOnSuccessListener {
@@ -244,6 +411,14 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Read ingredientes
+     *
+     * Descarga todos los ingredientes de la BBDD añadiendo un listener para que se realice cada vez
+     * que se cambia
+     *
+     * @return
+     */
     fun readIngredientes(): LiveData<MutableList<Ingrediente>>{
         // Creamos un LiveData que devolveremos para que se le pueda poner un observer y recoger así
         //los cambios que realicemos. Conectamos con la base de datos poniéndole un listener, de
@@ -274,6 +449,10 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return mutableLista
     }
 
+    /**
+     * Aplicar filtros ingr
+     *
+     */
     private fun aplicarFiltrosIngr() {
         // Limpiamos las listas y filtramos todos los ingredientes
         ingrVeganos.clear()
@@ -284,6 +463,11 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    /**
+     * Filtrar ingr
+     *
+     * @param i
+     */
     private fun filtrarIngr(i: Ingrediente) {
         // Intentamos borrar el ingrediente de cada una de las posibles listas por si se trata de
         //un update. Después la añadimos a la que corresponda y por último ordenamos las listas.
@@ -307,6 +491,14 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         ingrVeganosGlutenFree.sortBy { it.nombre!!.lowercase() }
     }
 
+    /**
+     * Read comidas
+     *
+     * Descarga todas las comidas de la BBDD añadiendo un listener para que se realice cada vez que
+     * se actualiza
+     *
+     * @return
+     */
     fun readComidas(): LiveData<MutableList<Comida>>{
         // Creamos un LiveData que devolveremos para que se le pueda poner un observer y recoger así
         //los cambios que realicemos. Conectamos con la base de datos poniéndole un listener, de
@@ -350,6 +542,10 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return mutableLista
     }
 
+    /**
+     * Aplicar filtros comidas
+     *
+     */
     private fun aplicarFiltrosComidas() {
         // Limpiamos las listas y filtramos todas las comidas
         comidasVeganas.clear()
@@ -360,6 +556,11 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
+    /**
+     * Filtrar comida
+     *
+     * @param comida
+     */
     private fun filtrarComida(comida: Comida) {
         // Creamos dos banderas para cada una de las listas e iteramos la lista de ingredientes de
         //la comida. Si el ingrediente iterado no es vegano o glutenFree, se actualiza la bandera
@@ -400,6 +601,12 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         comidasVeganasGlutenFree.sortBy { it.nombre!!.lowercase() }
     }
 
+    /**
+     * Read menu
+     *
+     * Descarga el menu personal del usuario en cuestion mediante una funcion suspendida
+     *
+     */
     suspend fun readMenu() {
         // Realizamos una lectura asíncrona del menú de la base de datos, esta vez sin un listener para
         //que no se repita cada vez que modificamos el menú (que será muchas veces). Después, lo asignamos
@@ -437,25 +644,42 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         }
     }
 
-    // Comprobamos la lista que tenemos que usar de base para crear el menú según los booleanos que
+    /**
+     * Generar menu
+     *
+     * Crea el menu y actualiza el LiveData asociado para que se actualice
+     *
+     * @param vegano
+     * @param glutenFree
+     */// Comprobamos la lista que tenemos que usar de base para crear el menú según los booleanos que
     //recibimos por parámetro y después vamos generando números aleatorios en base a dicha lista y
     //recuperando las comidas a las que nos apunten, añadiendolas al menú si no estaban presentes y
     //repitiendo esto hasta que tengamos las 5 comidas. Después guardamos el menú en bd y lo asignamos
     //a nuestro LiveData para que se actualicen las listas de los observadores.
     fun generarMenu(vegano: Boolean, glutenFree: Boolean){
-        menuSemanal.clear()
-        var lista=dirimirListaMenu(vegano, glutenFree)
-        do {
-            var random= Random.nextInt(lista.size)
-            if(!menuSemanal.contains(lista[random])){
-                menuSemanal.add(lista[random])
-            }
-        } while (menuSemanal.size<5)
-        ldListaMenu.value=menuSemanal
-        guardarMenu(menuSemanal)
+        try{
+            menuSemanal.clear()
+            var lista=dirimirListaMenu(vegano, glutenFree)
+            do {
+                var random= Random.nextInt(lista.size)
+                if(!menuSemanal.contains(lista[random])){
+                    menuSemanal.add(lista[random])
+                }
+            } while (menuSemanal.size<5)
+            ldListaMenu.value=menuSemanal
+            guardarMenu(menuSemanal)
+        } catch (e: Exception){
+            print(e.message.toString())
+        }
     }
 
-    // Recibimos una lista que guardamos en bd dentro del usuario y pisando el nodo menú
+    /**
+     * Guardar menu
+     *
+     * Guarda el menu en base de datos
+     *
+     * @param menu
+     */// Recibimos una lista que guardamos en bd dentro del usuario y pisando el nodo menú
     fun guardarMenu(menu: MutableList<Comida>) {
         val usuario=usuarioFormateado()
         db.getReference("${usuario}").child("menu").setValue(menu).addOnSuccessListener {
@@ -466,7 +690,16 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
-    // Recibimos la posición de la comida que queremos modificar y los booleanos para ver en qué lista
+    /**
+     * Otra comida
+     *
+     * Devuelve otra comida de la lista correspondiente a los filtros seleccionados
+     *
+     * @param posicion
+     * @param vegano
+     * @param glutenFree
+     * @return
+     */// Recibimos la posición de la comida que queremos modificar y los booleanos para ver en qué lista
     //nos basamos. Después generamos un número aleatorio en base a dicha lista y recuperamos la comida
     //a la que apunta hasta que esta no esté en el menú. Actualizamos el menú, lo guardamos y devolvemos
     //la comida.
@@ -482,7 +715,18 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return otraComida
     }
 
-    // Recibimos la comida en que nos basaremos, su posición y los booleanos para ver en qué lista nos
+    /**
+     * Comida parecida
+     *
+     * Devuelve una comida cuyo tag coincide al menos una vez con el de la comida pasada como param y
+     * que se ajusta a los filtros seleccionados
+     *
+     * @param comida
+     * @param posicion
+     * @param vegano
+     * @param glutenFree
+     * @return
+     */// Recibimos la comida en que nos basaremos, su posición y los booleanos para ver en qué lista nos
     //basamos. Una vez la tengamos, iteramos el contenido de dicha lista guardando en otra de comidas
     //parecidas aquellas que contengan un tag que coincida con la comida recibida por parámetro. Luego
     //generamos el número aleatorio en base a la lista de comidas parecidas y recuperamos la comida a la
@@ -505,6 +749,15 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return comidaParecia
     }
 
+    /**
+     * Dirimir lista menu
+     *
+     * Devuelve la lista correspondiente segun los filtros seleccioandos
+     *
+     * @param vegano
+     * @param glutenFree
+     * @return
+     */
     // Método que nos va a devolver una de las listas de comidas en función de los booleanos que
     //recibamos por parámetro.
     private fun dirimirListaMenu(vegano: Boolean, glutenFree: Boolean): MutableList<Comida>{
@@ -524,6 +777,13 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return lista
     }
 
+    /**
+     * Guardar lista compra
+     *
+     * Guarda la lista de la compra en la BBDD
+     *
+     * @param listaCompra
+     */
     fun guardarListaCompra(listaCompra: String){
         val usuario=usuarioFormateado()
         db.getReference("${usuario}").child("listaCompra").setValue(listaCompra).addOnSuccessListener {
@@ -534,6 +794,13 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Read lista compra
+     *
+     * Descarga la lista de la compra de la BBDD y le pone un listener para que se actualice
+     *
+     * @return
+     */
     fun readListaCompra(): LiveData<String>{
         val usuario=usuarioFormateado()
         val ldListaCompra=MutableLiveData<String>()
@@ -551,6 +818,13 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return ldListaCompra
     }
 
+    /**
+     * Read sugerencias
+     *
+     * Descarga la lista de sugerencias de la BBDD y le añade un listener para que se actualice
+     *
+     * @return
+     */
     fun readSugerencias(): LiveData<MutableList<Sugerencia>>{
         val ldListaSugerencias=MutableLiveData<MutableList<Sugerencia>>()
         db.getReference("sugerencias").addValueEventListener(object : ValueEventListener{
@@ -574,6 +848,12 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
         return ldListaSugerencias
     }
 
+    /**
+     * Guardar sugerencia
+     *
+     *
+     * @param sugerencia
+     */
     fun guardarSugerencia(sugerencia: Sugerencia){
         db.getReference("sugerencias").child("${sugerencia.fecha}").setValue(sugerencia).addOnSuccessListener {
             //La sugerencia se ha guardado correctamente
@@ -583,6 +863,11 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
             }
     }
 
+    /**
+     * Borrar sugerencia
+     *
+     * @param sugerencia
+     */
     fun borrarSugerencia(sugerencia: Sugerencia){
         db.getReference("sugerencias/${sugerencia.fecha}").removeValue()
     }

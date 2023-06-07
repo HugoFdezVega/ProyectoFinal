@@ -12,6 +12,11 @@ import com.example.proyectofinal.model.adapters.sugerencia.SugerenciaAdapter
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Sugerencias admin activity
+ *
+ * @constructor Create empty Sugerencias admin activity
+ */
 @AndroidEntryPoint
 class SugerenciasAdminActivity : AppCompatActivity() {
     private val vm: MainViewModel by viewModels()
@@ -28,6 +33,10 @@ class SugerenciasAdminActivity : AppCompatActivity() {
         observarSugerencias()
     }
 
+    /**
+     * Observar sugerencias
+     *
+     */
     private fun observarSugerencias() {
         vm.readSugerencias().observe(this, Observer {
             lista=it
@@ -36,12 +45,23 @@ class SugerenciasAdminActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Set recycler
+     *
+     */
     private fun setRecycler() {
         binding.rvSugsAdmin.layoutManager=LinearLayoutManager(this)
         adapter=SugerenciaAdapter(lista, {onItemDelete(it)})
         binding.rvSugsAdmin.adapter=adapter
     }
 
+    /**
+     * On item delete
+     *
+     * Borra la sugerencia de la lista y de la BD
+     *
+     * @param sugerencia
+     */
     private fun onItemDelete(sugerencia: Sugerencia) {
         val index=lista.indexOf(sugerencia)
         lista.remove(sugerencia)
@@ -49,6 +69,10 @@ class SugerenciasAdminActivity : AppCompatActivity() {
         vm.borrarSugerencia(sugerencia)
     }
 
+    /**
+     * Set listeners
+     *
+     */
     private fun setListeners() {
         binding.btVolverSugsAdmin.setOnClickListener {
             finish()

@@ -12,6 +12,11 @@ import com.example.proyectofinal.R
 import com.example.proyectofinal.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Menu bar fragment
+ *
+ * @constructor Create empty Menu bar fragment
+ */
 @AndroidEntryPoint
 class MenuBarFragment : Fragment() {
     var listener: InterfazMenuBar?=null
@@ -31,6 +36,15 @@ class MenuBarFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_menu_bar, container, false)
     }
 
+    /**
+     * On view created
+     *
+     * En funcion de lo que se seleccione, devolvera un valor u otro para que se cambien los fragments
+     * en consecuencia
+     *
+     * @param view
+     * @param savedInstanceState
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val btHome=view.findViewById<ImageButton>(R.id.btHome)
@@ -51,6 +65,11 @@ class MenuBarFragment : Fragment() {
         }
     }
 
+    /**
+     * On attach
+     *
+     * @param context
+     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if(context is InterfazMenuBar){
@@ -58,6 +77,10 @@ class MenuBarFragment : Fragment() {
         }
     }
 
+    /**
+     * On detach
+     *
+     */
     override fun onDetach() {
         super.onDetach()
         listener=null
