@@ -9,6 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import com.airbnb.lottie.LottieAnimationView
+import com.example.proyectofinal.R
 import com.example.proyectofinal.databinding.ActivityMainBinding
 import com.example.proyectofinal.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -59,6 +61,12 @@ class MainActivity : AppCompatActivity() {
         inicializarListas()
         setListeners()
         comprobarEmail()
+        lottieAnimation(R.raw.randomeater30fps)
+    }
+
+    private fun lottieAnimation(animation: Int){
+        binding.ivAnimacion.setAnimation(animation)
+        binding.ivAnimacion.playAnimation()
     }
 
     /**
