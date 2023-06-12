@@ -51,6 +51,10 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
      */
     fun registrarUsuario(email: String, pass: String, callback: (Boolean)->Unit){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
+            if(it.isSuccessful){
+                readComidas()
+                readIngredientes()
+            }
             callback(it.isSuccessful)
         }
     }
@@ -65,6 +69,10 @@ class Repositorio @Inject constructor(private val prefs: Prefs) {
      */
     fun entrar(email: String, pass: String, callback: (Boolean) -> Unit){
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,pass).addOnCompleteListener {
+            if(it.isSuccessful){
+                readComidas()
+                readIngredientes()
+            }
             callback(it.isSuccessful)
         }
     }

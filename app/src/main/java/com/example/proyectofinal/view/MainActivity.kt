@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
                     val credenciales= GoogleAuthProvider.getCredential(cuenta.idToken,null)
                     FirebaseAuth.getInstance().signInWithCredential(credenciales).addOnCompleteListener {
                         if(it.isSuccessful){
+                            inicializarListas()
                             vm.guardarUsuario(cuenta.email?:"") //Si es nulo, pasa ""
                             startActivity(Intent(this, DosActivity::class.java))
                         } else {
@@ -201,12 +202,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observarComidas() {
+        vm.readComidas().removeObservers(this)
         vm.readComidas().observe(this, Observer {
 
         })
     }
 
     private fun observarIngredientes(){
+        vm.readIngredientes().removeObservers(this)
         vm.readIngredientes().observe(this, Observer {
 
         })
